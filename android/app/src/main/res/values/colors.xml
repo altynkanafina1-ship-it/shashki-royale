@@ -1,8 +1,13 @@
 <resources>
-    <color name="brand_background">#0A0503</color>
-    <color name="brand_background_dark">#1A0800</color>
-    <color name="brand_gold">#FFD700</color>
-    <color name="brand_gold_dim">#B8860B</color>
-    <color name="brand_red">#DC143C</color>
-    <color name="ic_launcher_background">#1A0800</color>
+    <!-- Light premium palette (synced with frontend design tokens) -->
+    <color name="brand_background">#F5EFE6</color>
+    <color name="brand_background_dark">#EDE1D2</color>
+    <color name="brand_surface">#EDE1D2</color>
+    <color name="brand_text_primary">#2B241E</color>
+    <color name="brand_text_muted">#77695D</color>
+    <color name="brand_gold">#C39A48</color>
+    <color name="brand_gold_dim">#A78239</color>
+    <color name="brand_wood">#815B43</color>
+    <color name="brand_red">#A74740</color>
+    <color name="ic_launcher_background">#F5EFE6</color>
 </resources>
