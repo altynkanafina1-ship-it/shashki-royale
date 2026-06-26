@@ -32,6 +32,17 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
+      # The default `gradle` shipped with setup-android is currently 9.x,
+      # which is incompatible with com.android.tools.build:gradle:8.1.4
+      # used by this project. Pin Gradle 8.4 — same version used by the
+      # v1.4.8 release workflow.
+      - name: Install Gradle 8.4
+        run: |
+          curl -sL https://services.gradle.org/distributions/gradle-8.4-bin.zip -o /tmp/gradle.zip
+          unzip -q -o /tmp/gradle.zip -d $HOME/
+          echo "$HOME/gradle-8.4/bin" >> $GITHUB_PATH
+          $HOME/gradle-8.4/bin/gradle --version
+
       - name: Install deps
         run: pnpm install --no-frozen-lockfile
 
@@ -48,7 +59,7 @@ jobs:
         working-directory: android
         run: |
           if [ -f gradlew ]; then chmod +x gradlew && ./gradlew assembleDebug --no-daemon
-          else gradle assembleDebug --no-daemon
+          else $HOME/gradle-8.4/bin/gradle assembleDebug --no-daemon
           fi
 
       - name: Upload debug APK
@@ -69,7 +80,7 @@ jobs:
         run: |
           echo "$ANDROID_KEYSTORE_B64" | base64 -d > app/release.keystore
           if [ -f gradlew ]; then chmod +x gradlew && ./gradlew assembleRelease --no-daemon
-          else gradle assembleRelease --no-daemon
+          else $HOME/gradle-8.4/bin/gradle assembleRelease --no-daemon
           fi
 
       - name: Upload release APK

@@ -13,6 +13,9 @@ on:
     paths-ignore:
       - "**.md"
       - "docs/**"
+      - ".github/workflows/build-apk.yml"
+      - ".github/workflows/build-android-apk.yml"
+      - ".github/workflows/deploy-cloudflare-pages.yml"
   workflow_dispatch:
     inputs:
       preview_url:
