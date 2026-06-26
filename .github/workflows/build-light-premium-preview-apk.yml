@@ -1,8 +1,18 @@
 name: Build Light Premium Preview APK
 
-# Manual-only trigger. We don't auto-publish a preview release on every push
-# to the feature branch to avoid generating dozens of useless prereleases.
+# Triggers:
+#   * workflow_dispatch — manual reruns with custom inputs (preferred for reruns).
+#   * push to feat/light-premium-game-theme — ensures the workflow is registered
+#     by GitHub Actions (a workflow_dispatch-only file on a non-default branch
+#     is otherwise invisible to the dispatch API) and produces an initial run.
+#     We DO skip runs whose head commit message contains [skip preview-apk] so
+#     repeated docs-only pushes don't accidentally bump the prerelease tag.
 on:
+  push:
+    branches: [feat/light-premium-game-theme]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
   workflow_dispatch:
     inputs:
       preview_url:
@@ -27,6 +37,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write   # to create the GitHub Release
+    env:
+      # Centralised inputs — fall back to sensible defaults when the workflow
+      # is triggered by `push` (where `inputs.*` is empty).
+      PREVIEW_URL: ${{ inputs.preview_url || 'https://feat-light-premium-game-them.shashki-royale.pages.dev/?apk=light-premium-preview' }}
+      RELEASE_TAG: ${{ inputs.release_tag || 'v2.0.0-light-premium-preview.1' }}
+      VERSION_CODE: ${{ inputs.version_code || '20001' }}
+      VERSION_NAME: ${{ inputs.version_name || '2.0.0-light-premium-preview.1' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -78,16 +95,12 @@ jobs:
       # workspace, NOT git — nothing is committed back.
       # ----------------------------------------------------------------------
       - name: Patch preview URL + version into workspace (CI only, not committed)
-        env:
-          PREVIEW_URL: ${{ inputs.preview_url }}
-          VC: ${{ inputs.version_code }}
-          VN: ${{ inputs.version_name }}
         run: |
           python3 - <<'PY'
           import os, re, sys, pathlib
           preview = os.environ["PREVIEW_URL"]
-          vc = os.environ["VC"]
-          vn = os.environ["VN"]
+          vc = os.environ["VERSION_CODE"]
+          vn = os.environ["VERSION_NAME"]
 
           main = pathlib.Path("android/app/src/main/java/com/shashkiroyale/app/MainActivity.java")
           src = main.read_text()
@@ -125,7 +138,7 @@ jobs:
             exit 3
           fi
           # Fail if the preview URL is NOT present.
-          if ! grep -q "${{ inputs.preview_url }}" android/app/src/main/java/com/shashkiroyale/app/MainActivity.java; then
+          if ! grep -q "${{ env.PREVIEW_URL }}" android/app/src/main/java/com/shashkiroyale/app/MainActivity.java; then
             echo "ERROR: preview URL was not injected" >&2
             exit 4
           fi
@@ -171,7 +184,7 @@ jobs:
       - name: Stage release artifacts
         run: |
           mkdir -p release
-          TAG="${{ inputs.release_tag }}"
+          TAG="${{ env.RELEASE_TAG }}"
           cp android/app/build/outputs/apk/release/app-release.apk \
              release/shashki-royale-light-premium-preview-release.apk
           cp android/app/build/outputs/apk/debug/app-debug.apk \
@@ -219,7 +232,7 @@ jobs:
       - name: Verify preview URL is actually inside the APK
         run: |
           if unzip -p release/shashki-royale-light-premium-preview-release.apk classes.dex \
-              | strings | grep -F "${{ inputs.preview_url }}" >/dev/null; then
+              | strings | grep -F "${{ env.PREVIEW_URL }}" >/dev/null; then
             echo "OK: preview URL present in classes.dex"
           else
             echo "ERROR: preview URL not found in release classes.dex" >&2
@@ -244,11 +257,11 @@ jobs:
           cat > release/build-info.json <<EOF
           {
             "appName": "Шашки Рояль (Light Premium Preview)",
-            "previewUrl": "${{ inputs.preview_url }}",
+            "previewUrl": "${{ env.PREVIEW_URL }}",
             "productionUrl": "https://shashki-royale.pages.dev/",
             "packageId": "com.shashkiroyale.app",
-            "versionName": "${{ inputs.version_name }}",
-            "versionCode": ${{ inputs.version_code }},
+            "versionName": "${{ env.VERSION_NAME }}",
+            "versionCode": ${{ env.VERSION_CODE }},
             "buildType": "Native Android WebView preview APK",
             "signing": "${{ steps.keystore.outputs.signing_kind }}",
             "releaseApk": {
@@ -272,7 +285,7 @@ jobs:
       - name: Upload Actions artifact (raw release folder)
         uses: actions/upload-artifact@v4
         with:
-          name: shashki-royale-light-premium-preview-${{ inputs.release_tag }}
+          name: shashki-royale-light-premium-preview-${{ env.RELEASE_TAG }}
           path: release/
           retention-days: 90
 
@@ -295,15 +308,15 @@ jobs:
           Тонкий Native Android WebView, который открывает развёрнутый на Cloudflare
           Pages light premium preview ветки \`feat/light-premium-game-theme\`:
 
-          \`${{ inputs.preview_url }}\`
+          \`${{ env.PREVIEW_URL }}\`
 
           Это **prerelease** для визуальной проверки светлой темы на реальном Android.
           Игровая логика, backend, Supabase, RPC, RLS, экономика и matchmaking не менялись.
 
           ### Параметры APK
           - packageId: \`com.shashkiroyale.app\`
-          - versionName: \`${{ inputs.version_name }}\`
-          - versionCode: \`${{ inputs.version_code }}\`
+          - versionName: \`${{ env.VERSION_NAME }}\`
+          - versionCode: \`${{ env.VERSION_CODE }}\`
           - minSdk 21, targetSdk 34
           - Подпись: $SIGNING (v1 JAR + v2 APK Signature Scheme)
 
@@ -330,8 +343,8 @@ jobs:
       - name: Create GitHub Prerelease + attach APKs
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ inputs.release_tag }}
-          name: "Шашки Рояль ${{ inputs.version_name }} — Light Premium Preview"
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: "Шашки Рояль ${{ env.VERSION_NAME }} — Light Premium Preview"
           body_path: release/RELEASE_NOTES.md
           prerelease: true
           target_commitish: ${{ github.sha }}
