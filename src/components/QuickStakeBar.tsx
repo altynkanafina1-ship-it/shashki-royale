@@ -11,12 +11,6 @@ import { saveActiveGame } from "../lib/storage";
 import { createInitialBoard } from "../game/initialBoard";
 import { supabaseConfigured } from "../lib/supabase";
 
-/**
- * Quick stake amounts (in Coin) — matches the original product spec.
- * Backed by Supabase RPC `create_stake_game` / `join_stake_game`.
- * Min stake requires CHECK constraint relaxation (see
- * supabase/migration_v4_anonymous_ux.sql).
- */
 export const QUICK_STAKES = [1, 5, 10, 25, 50] as const;
 export type QuickStake = (typeof QUICK_STAKES)[number];
 
@@ -33,18 +27,18 @@ function GoldCoin({ size = 16 }: { size?: number }) {
       viewBox="0 0 24 24"
       width={size}
       height={size}
-      style={{ filter: "drop-shadow(0 0 4px rgba(255,215,0,0.5))", flexShrink: 0 }}
+      style={{ filter: "drop-shadow(0 1px 2px rgba(167,126,46,0.35))", flexShrink: 0 }}
     >
       <defs>
         <radialGradient id="qsb-gc" cx="40%" cy="35%" r="65%">
-          <stop offset="0%" stopColor="#FFE566" />
-          <stop offset="50%" stopColor="#FFD700" />
-          <stop offset="100%" stopColor="#B8860B" />
+          <stop offset="0%" stopColor="#F3DEA0" />
+          <stop offset="50%" stopColor="#E0BD6A" />
+          <stop offset="100%" stopColor="#A77E2E" />
         </radialGradient>
       </defs>
-      <circle cx="12" cy="12" r="11" fill="url(#qsb-gc)" stroke="#D4AF37" strokeWidth="0.8" />
-      <circle cx="12" cy="12" r="8.5" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="0.5" />
-      <text x="12" y="16.5" textAnchor="middle" fontSize="9" fontWeight="bold" fill="#7a5200" fontFamily="serif">
+      <circle cx="12" cy="12" r="11" fill="url(#qsb-gc)" stroke="#9C7530" strokeWidth="0.8" />
+      <circle cx="12" cy="12" r="8.5" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="0.5" />
+      <text x="12" y="16.5" textAnchor="middle" fontSize="9" fontWeight="bold" fill="#5C3F18" fontFamily="serif">
         ₡
       </text>
     </svg>
@@ -59,19 +53,9 @@ type StakeTable = {
   match_type: string;
   white_player_id?: string | null;
   white_profile_id?: string | null;
-  // Supabase PostgREST returns this as an OBJECT (1:1 via UNIQUE FK), not an
-  // array. We must accept both shapes to be safe across PostgREST versions
-  // and across changes in the foreign-key cardinality.
   game_stakes: StakeRow | StakeRow[] | null;
 };
 
-/**
- * Normalise the polymorphic `game_stakes` return shape from PostgREST.
- * - 1:1 relation (UNIQUE FK) → returned as a single object
- * - 1:N relation             → returned as an array
- * In our schema game_stakes.game_id is UNIQUE so it should always be an
- * object, but we defend against the array form too.
- */
 function pickStake(raw: StakeRow | StakeRow[] | null | undefined): StakeRow | null {
   if (!raw) return null;
   if (Array.isArray(raw)) return raw[0] ?? null;
@@ -93,22 +77,13 @@ export default function QuickStakeBar() {
       toast.error(t("supabaseNotConfigured", { defaultValue: "Онлайн временно недоступен" }));
       return;
     }
-    // Wait for profile to be ready (anonymous bootstrap may still be in-flight)
     if (profileLoading || !profile) {
       toast.info(t("preparingProfile", { defaultValue: "Готовим профиль…" }));
-      // Best-effort refresh in case wallet RLS missed first hop
       await refreshProfile().catch(() => {});
       return;
     }
     if (balance < stake) {
-      toast.error(t("notEnoughCoins", { defaultValue: "Недостаточно Coin для этой ставки" }), {
-        style: {
-          background: "#2a0a00",
-          border: "1px solid rgba(220,50,50,0.5)",
-          color: "#ffd700",
-          fontFamily: "Cinzel, serif",
-        },
-      });
+      toast.error(t("notEnoughCoins", { defaultValue: "Недостаточно Coin для этой ставки" }));
       return;
     }
 
@@ -116,14 +91,6 @@ export default function QuickStakeBar() {
     try {
       const tables = (await fetchStakeTables()) as unknown as StakeTable[];
 
-      // ─────────────────────────────────────────────────────────────────────
-      // PHASE 1: Detect "stale" matchmaking tables the current user owns
-      // (status='waiting', no opponent). These can pile up if the user
-      // closed the app mid-search. They keep Coin locked on the wallet and
-      // pollute the lobby, so we transparently cancel them here. If one of
-      // those stale tables happens to match the requested stake, we re-use
-      // it instead of cancelling+re-creating.
-      // ─────────────────────────────────────────────────────────────────────
       const myStaleTables = tables.filter((tbl) => {
         const isMine =
           (tbl.white_player_id != null && tbl.white_player_id === playerId) ||
@@ -136,8 +103,6 @@ export default function QuickStakeBar() {
       );
 
       if (reusableSelf) {
-        // Already searching for this exact stake — just navigate to the
-        // existing waiting room instead of creating a duplicate.
         saveActiveGame({
           gameId: reusableSelf.id,
           roomCode: reusableSelf.room_code,
@@ -153,17 +118,11 @@ export default function QuickStakeBar() {
         try {
           await cancelStakeGame(playerId, stale.id);
         } catch (e) {
-          // Non-fatal: if we fail to cancel a stale table the player simply
-          // sees it later in the lobby and can cancel manually.
           console.warn("[QuickMatch] failed to cancel stale table", stale.id, e);
         }
       }
-      // Refresh balance so the matchmaker sees the refunded coins right away.
       await refreshProfile().catch(() => {});
 
-      // ─────────────────────────────────────────────────────────────────────
-      // PHASE 2: Look for any OTHER player's waiting table at this stake.
-      // ─────────────────────────────────────────────────────────────────────
       const candidate = tables.find((tbl) => {
         const stakeRow = pickStake(tbl.game_stakes);
         const fee = Number(stakeRow?.entry_fee ?? 0);
@@ -184,9 +143,7 @@ export default function QuickStakeBar() {
           savedAt: Date.now(),
         });
         await refreshProfile();
-        toast.success(`⚔️ ${t("opponentFound", { defaultValue: "Соперник найден!" })} (${stake} Coin)`, {
-          style: { background: "#0d2200", border: "1px solid rgba(100,200,50,0.4)", color: "#90ee90" },
-        });
+        toast.success(`⚔️ ${t("opponentFound", { defaultValue: "Соперник найден!" })} (${stake} Coin)`);
         navigate("/online-game", { state: { gameId: candidate.id, myColor: "black", stake } });
         return;
       }
@@ -207,14 +164,7 @@ export default function QuickStakeBar() {
     } catch (err) {
       const raw = err instanceof Error ? err.message : "Error";
       const friendly = mapErrorToRussian(raw);
-      toast.error(friendly, {
-        style: {
-          background: "#2a0a00",
-          border: "1px solid rgba(220,50,50,0.5)",
-          color: "#ffd700",
-          fontFamily: "Cinzel, serif",
-        },
-      });
+      toast.error(friendly);
     } finally {
       setBusyStake(null);
     }
@@ -225,22 +175,20 @@ export default function QuickStakeBar() {
       data-testid="quick-stake-bar"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15, duration: 0.4 }}
+      transition={{ delay: 0.18, duration: 0.4 }}
       className="w-full max-w-sm rounded-2xl px-3 py-2.5"
       style={{
-        background:
-          "linear-gradient(135deg, rgba(184,134,11,0.12) 0%, rgba(255,215,0,0.04) 100%)",
-        border: "1px solid rgba(255,215,0,0.22)",
-        boxShadow: "0 0 18px rgba(212,175,55,0.06)",
+        background: "linear-gradient(135deg, #FFFDF8 0%, #FAF3E6 100%)",
+        border: "1px solid var(--sr-border-strong)",
+        boxShadow: "var(--sr-shadow-card)",
       }}
     >
-      {/* Header row */}
       <div className="flex items-center justify-between mb-2 px-0.5">
         <div className="flex items-center gap-1.5">
-          <Zap className="w-3.5 h-3.5" style={{ color: "#FFD700" }} />
+          <Zap className="w-3.5 h-3.5" style={{ color: "var(--sr-wood-deep)" }} />
           <span
-            className="text-xs font-bold uppercase tracking-widest"
-            style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}
+            className="text-xs font-bold uppercase tracking-[0.18em]"
+            style={{ color: "var(--sr-wood-deep)", fontFamily: "Inter, sans-serif" }}
           >
             {t("quickMatch", { defaultValue: "Быстрый матч" })}
           </span>
@@ -250,7 +198,7 @@ export default function QuickStakeBar() {
           {balanceKnown ? (
             <span
               className="text-xs font-black"
-              style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}
+              style={{ color: "var(--sr-wood-deep)", fontFamily: "Inter, sans-serif" }}
               data-testid="qsb-balance"
             >
               {balance.toLocaleString()}
@@ -258,14 +206,13 @@ export default function QuickStakeBar() {
           ) : (
             <span
               className="inline-block h-3 w-10 rounded animate-pulse"
-              style={{ background: "rgba(212,175,55,0.25)" }}
+              style={{ background: "var(--sr-surface-muted)" }}
               data-testid="qsb-balance-loading"
             />
           )}
         </div>
       </div>
 
-      {/* Stake buttons */}
       <div
         className="grid grid-cols-5 gap-1.5"
         role="group"
@@ -282,26 +229,26 @@ export default function QuickStakeBar() {
               data-testid={`qsb-stake-${stake}`}
               onClick={() => void startQuickMatch(stake)}
               disabled={disabled}
-              className="flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl transition-all active:scale-95 cursor-pointer disabled:cursor-not-allowed"
+              className="flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl transition-all active:scale-95 cursor-pointer disabled:cursor-not-allowed"
               style={{
                 background: !affordable
-                  ? "rgba(255,255,255,0.03)"
+                  ? "var(--sr-surface-2)"
                   : isBusy
-                  ? "rgba(255,215,0,0.28)"
-                  : "linear-gradient(135deg, rgba(184,134,11,0.25) 0%, rgba(255,215,0,0.14) 100%)",
+                  ? "linear-gradient(135deg, #F3DEA0 0%, #E0BD6A 100%)"
+                  : "linear-gradient(135deg, #FFFDF8 0%, #F0E1C4 100%)",
                 border: !affordable
-                  ? "1px solid rgba(255,255,255,0.06)"
-                  : "1px solid rgba(255,215,0,0.45)",
-                color: !affordable ? "rgba(200,150,50,0.35)" : "#FFD700",
-                boxShadow: affordable && !isBusy ? "0 2px 8px rgba(180,140,0,0.18)" : "none",
-                minHeight: 48,
+                  ? "1px solid var(--sr-border-soft)"
+                  : "1px solid var(--sr-border-strong)",
+                color: !affordable ? "var(--sr-text-subtle)" : "var(--sr-wood-deep)",
+                boxShadow: affordable && !isBusy ? "var(--sr-shadow-sm)" : "none",
+                minHeight: 50,
               }}
               title={!affordable ? t("notEnoughCoins", { defaultValue: "Не хватает Coin" }) : `${stake} Coin`}
             >
               <GoldCoin size={14} />
               <span
                 className="text-xs font-black leading-none"
-                style={{ fontFamily: "Cinzel, serif" }}
+                style={{ fontFamily: "Inter, sans-serif" }}
               >
                 {stake}
               </span>
@@ -310,16 +257,13 @@ export default function QuickStakeBar() {
         })}
       </div>
 
-      {/* Helper text */}
       <p
-        className="text-[10px] text-center mt-1.5 leading-snug"
-        style={{ color: "rgba(212,175,55,0.55)" }}
+        className="text-[10px] text-center mt-2 leading-snug font-medium"
+        style={{ color: "var(--sr-text-muted)" }}
       >
         {balanceKnown && balance < 1
           ? t("freeModeHint", { defaultValue: "Нулевой баланс? Играйте локально или онлайн без ставки" })
-          : t("quickMatchHint", {
-              defaultValue: "Выбери ставку — найдём соперника",
-            })}
+          : t("quickMatchHint", { defaultValue: "Выбери ставку — найдём соперника" })}
       </p>
     </motion.div>
   );

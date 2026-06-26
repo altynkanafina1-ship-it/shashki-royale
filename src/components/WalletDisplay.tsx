@@ -10,13 +10,13 @@ function Coin({ size = 14 }: { size?: number }) {
     <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
       <defs>
         <radialGradient id="wd-coin" cx="40%" cy="35%" r="65%">
-          <stop offset="0%" stopColor="#FFE566" />
-          <stop offset="50%" stopColor="#FFD700" />
-          <stop offset="100%" stopColor="#B8860B" />
+          <stop offset="0%" stopColor="#F3DEA0" />
+          <stop offset="50%" stopColor="#E0BD6A" />
+          <stop offset="100%" stopColor="#A77E2E" />
         </radialGradient>
       </defs>
-      <circle cx="12" cy="12" r="11" fill="url(#wd-coin)" stroke="#D4AF37" strokeWidth="0.8" />
-      <text x="12" y="16.5" textAnchor="middle" fontSize="9" fontWeight="bold" fill="#7a5200" fontFamily="serif">₡</text>
+      <circle cx="12" cy="12" r="11" fill="url(#wd-coin)" stroke="#9C7530" strokeWidth="0.8" />
+      <text x="12" y="16.5" textAnchor="middle" fontSize="9" fontWeight="bold" fill="#5C3F18" fontFamily="serif">₡</text>
     </svg>
   );
 }
@@ -36,7 +36,6 @@ export function WalletDisplay() {
         const walletData = await getWallet(playerId);
         if (!cancelled) setWallet(walletData);
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error("Error loading wallet:", err);
       } finally {
         if (!cancelled) {
@@ -48,7 +47,6 @@ export function WalletDisplay() {
 
     void loadWallet();
 
-    // Refresh every 20s so balance follows wins/losses without forcing reload.
     const interval = setInterval(loadWallet, 20000);
     return () => {
       cancelled = true;
@@ -56,17 +54,20 @@ export function WalletDisplay() {
     };
   }, [playerId, authLoading]);
 
-  // Wallet not loaded yet — show skeleton (NEVER show "0" before we know).
   if (loading && !attempted) {
     return (
       <div
         className="px-2.5 py-1.5 rounded-xl flex items-center gap-1.5"
-        style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.15)" }}
+        style={{
+          background: "var(--sr-surface)",
+          border: "1px solid var(--sr-border)",
+          boxShadow: "var(--sr-shadow-sm)",
+        }}
       >
         <Coin size={14} />
         <span
           className="inline-block h-3 w-8 rounded animate-pulse"
-          style={{ background: "rgba(212,175,55,0.25)" }}
+          style={{ background: "var(--sr-surface-muted)" }}
           aria-label="loading balance"
         />
       </div>
@@ -79,24 +80,25 @@ export function WalletDisplay() {
   return (
     <Link to="/wallet" aria-label="Coin wallet">
       <motion.div
-        whileHover={{ scale: 1.04 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.96 }}
         className="px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
         style={{
-          background: "rgba(212,175,55,0.12)",
-          border: "1px solid rgba(212,175,55,0.3)",
+          background: "linear-gradient(135deg, #FAF3E6 0%, #F0E1C4 100%)",
+          border: "1px solid var(--sr-border-strong)",
+          boxShadow: "var(--sr-shadow-sm)",
         }}
       >
         <Coin size={14} />
         <span
           className="text-sm font-bold leading-none"
-          style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}
+          style={{ color: "var(--sr-wood-deep)", fontFamily: "Inter, sans-serif" }}
           data-testid="wallet-balance"
         >
           {balance.toLocaleString()}
         </span>
         {locked > 0 && (
-          <span className="text-[10px]" style={{ color: "rgba(245,158,11,0.7)" }}>
+          <span className="text-[10px] font-medium" style={{ color: "var(--sr-warning)" }}>
             🔒{locked}
           </span>
         )}

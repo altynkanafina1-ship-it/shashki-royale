@@ -10,15 +10,14 @@ import { createInitialBoard } from "../game/initialBoard.ts";
 import { supabase, supabaseConfigured } from "../lib/supabase.ts";
 import { toast } from "sonner";
 
-const ROYAL_BG = {
-  background:
-    "radial-gradient(ellipse at 50% 0%, rgba(120,50,0,0.35) 0%, transparent 60%), linear-gradient(180deg, #0d0400 0%, #1a0800 50%, #0d0400 100%)",
-};
-
 const AVATARS = ["♟", "♛", "⚔️", "🛡️", "🦁", "🐺", "🔥", "🌙"];
 const FEE_OPTIONS = [1, 5, 10, 50] as const;
 
 type FeeFilter = "all" | "mine" | "beginner" | "master";
+
+const ROYAL_BG = {
+  background: "transparent",
+};
 
 function generateRoomCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -68,16 +67,16 @@ function GoldCoin({ size = 16 }: { size?: number }) {
       viewBox="0 0 24 24"
       width={size}
       height={size}
-      style={{ filter: "drop-shadow(0 0 4px rgba(255,215,0,0.5))", flexShrink: 0 }}
+      style={{ filter: "drop-shadow(0 0 4px var(--sr-wood-deep))", flexShrink: 0 }}
     >
       <defs>
         <radialGradient id="gc" cx="40%" cy="35%" r="65%">
           <stop offset="0%" stopColor="#FFE566" />
-          <stop offset="50%" stopColor="#FFD700" />
+          <stop offset="50%" stopColor="var(--sr-wood-deep)" />
           <stop offset="100%" stopColor="#B8860B" />
         </radialGradient>
       </defs>
-      <circle cx="12" cy="12" r="11" fill="url(#gc)" stroke="#D4AF37" strokeWidth="0.8" />
+      <circle cx="12" cy="12" r="11" fill="url(#gc)" stroke="var(--sr-wood-deep)" strokeWidth="0.8" />
       <circle cx="12" cy="12" r="8.5" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="0.5" />
       <text x="12" y="16.5" textAnchor="middle" fontSize="8" fontWeight="bold" fill="#7a5200" fontFamily="serif">
         ₿
@@ -152,8 +151,8 @@ export default function StakeLobbyPage() {
         style: {
           background: "#2a0a00",
           border: "1px solid rgba(220,50,50,0.5)",
-          color: "#ffd700",
-          fontFamily: "Cinzel, serif",
+          color: "var(--sr-wood-deep)",
+          fontFamily: "Inter, sans-serif",
         },
       });
       return;
@@ -170,7 +169,7 @@ export default function StakeLobbyPage() {
       });
       await refreshProfile();
       toast.success(`🏆 Входим в игру! Взнос: ${fee} 🪙`, {
-        style: { background: "#0d2200", border: "1px solid rgba(100,200,50,0.4)", color: "#90ee90" },
+        style: { background: "#0d2200", border: "1px solid rgba(100,200,50,0.4)", color: "#56815D" },
       });
       navigate("/online-game", { state: { gameId: table.id, myColor: "black", stake: fee } });
     } catch (err) {
@@ -179,8 +178,8 @@ export default function StakeLobbyPage() {
         style: {
           background: "#2a0a00",
           border: "1px solid rgba(220,50,50,0.5)",
-          color: "#ffd700",
-          fontFamily: "Cinzel, serif",
+          color: "var(--sr-wood-deep)",
+          fontFamily: "Inter, sans-serif",
         },
       });
     } finally {
@@ -212,13 +211,13 @@ export default function StakeLobbyPage() {
           <button
             onClick={() => navigate("/")}
             className="p-2 rounded-xl cursor-pointer"
-            style={{ background: "rgba(255,255,255,0.05)" }}
+            style={{ background: "var(--sr-surface)" }}
           >
-            <ChevronLeft className="w-5 h-5" style={{ color: "rgba(200,150,50,0.8)" }} />
+            <ChevronLeft className="w-5 h-5" style={{ color: "var(--sr-text)" }} />
           </button>
           <h1
             className="text-base font-bold tracking-widest uppercase"
-            style={{ fontFamily: "Cinzel, serif", color: "#ffd700" }}
+            style={{ fontFamily: "Cinzel, serif", color: "var(--sr-wood-deep)" }}
           >
             Турниры
           </h1>
@@ -227,18 +226,18 @@ export default function StakeLobbyPage() {
           <button
             onClick={() => void loadTables()}
             className="p-2 rounded-xl cursor-pointer"
-            style={{ background: "rgba(255,255,255,0.05)" }}
+            style={{ background: "var(--sr-surface)" }}
             title="Обновить"
           >
-            <RefreshCw className="w-4 h-4" style={{ color: "rgba(200,150,50,0.6)" }} />
+            <RefreshCw className="w-4 h-4" style={{ color: "var(--sr-text-muted)" }} />
           </button>
           <button
             onClick={() => setShowCreate(true)}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl cursor-pointer transition-all active:scale-95"
-            style={{ background: "linear-gradient(135deg, #b8860b, #ffd700)", color: "#1a0800" }}
+            style={{ background: "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)", color: "var(--sr-surface)" }}
           >
             <Plus className="w-4 h-4" />
-            <span className="text-xs font-bold" style={{ fontFamily: "Cinzel, serif" }}>
+            <span className="text-xs font-bold" style={{ fontFamily: "Inter, sans-serif" }}>
               Создать стол
             </span>
           </button>
@@ -251,14 +250,14 @@ export default function StakeLobbyPage() {
           className="flex items-center justify-between px-4 py-3 rounded-2xl"
           style={{
             background: "linear-gradient(135deg, rgba(184,134,11,0.14) 0%, rgba(255,215,0,0.05) 100%)",
-            border: "1px solid rgba(255,215,0,0.18)",
-            boxShadow: "0 0 24px rgba(212,175,55,0.07)",
+            border: "1px solid var(--sr-border)",
+            boxShadow: "0 0 24px var(--sr-surface-2)",
           }}
         >
           <div className="flex items-center gap-2">
             <span
               className="text-xs uppercase tracking-widest"
-              style={{ color: "rgba(200,150,50,0.55)", fontFamily: "Cinzel, serif" }}
+              style={{ color: "rgba(200,150,50,0.55)", fontFamily: "Inter, sans-serif" }}
             >
               Ваш баланс
             </span>
@@ -267,11 +266,11 @@ export default function StakeLobbyPage() {
             <GoldCoin size={20} />
             <span
               className="text-xl font-black"
-              style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}
+              style={{ color: "var(--sr-wood-deep)", fontFamily: "Inter, sans-serif" }}
             >
               {wallet ? wallet.crypto_balance.toLocaleString() : "—"}
             </span>
-            <span className="text-xs" style={{ color: "rgba(200,150,50,0.5)" }}>
+            <span className="text-xs" style={{ color: "var(--sr-text-muted)" }}>
               жетонов
             </span>
           </div>
@@ -286,13 +285,13 @@ export default function StakeLobbyPage() {
             onClick={() => setFilter(tab.key)}
             className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition-all"
             style={{
-              background: filter === tab.key ? "rgba(255,215,0,0.15)" : "rgba(255,255,255,0.04)",
+              background: filter === tab.key ? "var(--sr-border)" : "var(--sr-surface-2)",
               border:
                 filter === tab.key
-                  ? "1px solid rgba(255,215,0,0.4)"
-                  : "1px solid rgba(255,255,255,0.07)",
-              color: filter === tab.key ? "#ffd700" : "rgba(200,150,50,0.5)",
-              fontFamily: "Cinzel, serif",
+                  ? "1px solid var(--sr-border-strong)"
+                  : "1px solid var(--sr-border-soft)",
+              color: filter === tab.key ? "var(--sr-wood-deep)" : "var(--sr-text-muted)",
+              fontFamily: "Inter, sans-serif",
             }}
           >
             {tab.icon}
@@ -304,9 +303,9 @@ export default function StakeLobbyPage() {
       {/* Table count badge */}
       {!isLoading && supabaseConfigured && (
         <div className="px-4 pb-2">
-          <p className="text-xs" style={{ color: "rgba(200,150,50,0.35)" }}>
+          <p className="text-xs" style={{ color: "var(--sr-text-muted)" }}>
             Доступно столов:{" "}
-            <span style={{ color: "rgba(200,150,50,0.6)" }}>{filtered.length}</span>
+            <span style={{ color: "var(--sr-text-muted)" }}>{filtered.length}</span>
           </p>
         </div>
       )}
@@ -339,11 +338,11 @@ export default function StakeLobbyPage() {
                   className="rounded-2xl overflow-hidden"
                   style={{
                     background: isMyTable
-                      ? "rgba(212,175,55,0.06)"
-                      : "rgba(255,255,255,0.025)",
+                      ? "var(--sr-surface-2)"
+                      : "var(--sr-surface-2)",
                     border: isMyTable
-                      ? "1px solid rgba(212,175,55,0.25)"
-                      : "1px solid rgba(255,215,0,0.08)",
+                      ? "1px solid var(--sr-border-strong)"
+                      : "1px solid var(--sr-surface)",
                   }}
                 >
                   {/* Table row */}
@@ -360,7 +359,7 @@ export default function StakeLobbyPage() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <p
                             className="text-sm font-bold truncate"
-                            style={{ color: "rgba(220,190,90,0.95)", fontFamily: "Cinzel, serif" }}
+                            style={{ color: "var(--sr-text)", fontFamily: "Inter, sans-serif" }}
                           >
                             {creator?.nickname ?? "Unknown"}
                           </p>
@@ -368,10 +367,10 @@ export default function StakeLobbyPage() {
                             <span
                               className="text-[10px] px-1.5 py-0.5 rounded"
                               style={{
-                                background: "rgba(212,175,55,0.15)",
-                                color: "#ffd700",
-                                border: "1px solid rgba(212,175,55,0.3)",
-                                fontFamily: "Cinzel, serif",
+                                background: "var(--sr-border)",
+                                color: "var(--sr-wood-deep)",
+                                border: "1px solid var(--sr-border-strong)",
+                                fontFamily: "Inter, sans-serif",
                               }}
                             >
                               Ваш стол
@@ -379,7 +378,7 @@ export default function StakeLobbyPage() {
                           )}
                         </div>
                         <div className="flex items-center gap-3 mt-0.5">
-                          <span className="text-xs" style={{ color: "rgba(200,150,50,0.4)" }}>
+                          <span className="text-xs" style={{ color: "var(--sr-text-muted)" }}>
                             Рейтинг: {creator?.rating ?? "?"}
                           </span>
                           <span className="text-[11px] font-semibold" style={{ color: tier.color }}>
@@ -388,7 +387,7 @@ export default function StakeLobbyPage() {
                         </div>
                         <p
                           className="text-xs mt-0.5 font-mono tracking-widest"
-                          style={{ color: "rgba(200,150,50,0.35)" }}
+                          style={{ color: "var(--sr-text-muted)" }}
                         >
                           {table.room_code}
                         </p>
@@ -401,15 +400,15 @@ export default function StakeLobbyPage() {
                       <div
                         className="flex items-center gap-1 px-2.5 py-1 rounded-lg"
                         style={{
-                          background: "rgba(255,215,0,0.08)",
-                          border: "1px solid rgba(255,215,0,0.15)",
+                          background: "var(--sr-surface)",
+                          border: "1px solid var(--sr-border)",
                         }}
                       >
                         <GoldCoin size={12} />
-                        <span className="text-xs font-black" style={{ color: "#ffd700" }}>
+                        <span className="text-xs font-black" style={{ color: "var(--sr-wood-deep)" }}>
                           {fee}
                         </span>
-                        <span className="text-[10px]" style={{ color: "rgba(200,150,50,0.5)" }}>
+                        <span className="text-[10px]" style={{ color: "var(--sr-text-muted)" }}>
                           → {pot}
                         </span>
                       </div>
@@ -423,9 +422,9 @@ export default function StakeLobbyPage() {
                           style={{
                             background: canAfford
                               ? "linear-gradient(135deg, #8b1a1a, #c0392b)"
-                              : "rgba(255,255,255,0.06)",
-                            color: canAfford ? "#ffd700" : "rgba(200,150,50,0.4)",
-                            fontFamily: "Cinzel, serif",
+                              : "var(--sr-surface)",
+                            color: canAfford ? "var(--sr-wood-deep)" : "var(--sr-text-muted)",
+                            fontFamily: "Inter, sans-serif",
                             border: "1px solid rgba(180,50,50,0.3)",
                             minWidth: 72,
                           }}
@@ -511,7 +510,7 @@ function CreateTableModal({
         savedAt: Date.now(),
       });
       toast.success(`♛ Стол создан! Ждём соперника...`, {
-        style: { background: "#0d2200", border: "1px solid rgba(100,200,50,0.4)", color: "#90ee90" },
+        style: { background: "#0d2200", border: "1px solid rgba(100,200,50,0.4)", color: "#56815D" },
       });
       await onCreated(result.game_id, result.room_code, selectedFee);
     } catch (err) {
@@ -520,8 +519,8 @@ function CreateTableModal({
         style: {
           background: "#2a0a00",
           border: "1px solid rgba(220,50,50,0.5)",
-          color: "#ffd700",
-          fontFamily: "Cinzel, serif",
+          color: "var(--sr-wood-deep)",
+          fontFamily: "Inter, sans-serif",
         },
       });
       setCreating(false);
@@ -542,18 +541,18 @@ function CreateTableModal({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 60, opacity: 0 }}
         className="w-full max-w-sm rounded-3xl p-6 space-y-5"
-        style={{ background: "#1a0800", border: "1px solid rgba(255,215,0,0.18)" }}
+        style={{ background: "var(--sr-surface)", border: "1px solid var(--sr-border)" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Title */}
         <div className="text-center">
           <h2
             className="text-lg font-bold"
-            style={{ color: "#ffd700", fontFamily: "Cinzel, serif" }}
+            style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
           >
             Создать стол
           </h2>
-          <p className="text-xs mt-1" style={{ color: "rgba(200,150,50,0.5)" }}>
+          <p className="text-xs mt-1" style={{ color: "var(--sr-text-muted)" }}>
             Выберите взнос для участия в турнире
           </p>
         </div>
@@ -561,14 +560,14 @@ function CreateTableModal({
         {/* Balance display */}
         <div
           className="flex items-center justify-between px-4 py-2.5 rounded-xl"
-          style={{ background: "rgba(255,215,0,0.06)", border: "1px solid rgba(255,215,0,0.12)" }}
+          style={{ background: "var(--sr-surface-2)", border: "1px solid var(--sr-border)" }}
         >
-          <span className="text-xs" style={{ color: "rgba(200,150,50,0.6)" }}>
+          <span className="text-xs" style={{ color: "var(--sr-text-muted)" }}>
             Доступно:
           </span>
           <div className="flex items-center gap-1.5">
             <GoldCoin size={14} />
-            <span className="text-sm font-black" style={{ color: "#ffd700" }}>
+            <span className="text-sm font-black" style={{ color: "var(--sr-wood-deep)" }}>
               {balance}
             </span>
           </div>
@@ -578,7 +577,7 @@ function CreateTableModal({
         <div>
           <p
             className="text-xs uppercase tracking-widest mb-3"
-            style={{ color: "rgba(200,150,50,0.45)", fontFamily: "Cinzel, serif" }}
+            style={{ color: "rgba(200,150,50,0.45)", fontFamily: "Inter, sans-serif" }}
           >
             Взнос за участие
           </p>
@@ -594,13 +593,13 @@ function CreateTableModal({
                   disabled={!affordable}
                   className="py-3 rounded-xl text-sm font-bold cursor-pointer transition-all disabled:opacity-30 disabled:cursor-not-allowed flex flex-col items-center gap-1"
                   style={{
-                    background: isSelected ? "rgba(255,215,0,0.18)" : "rgba(255,255,255,0.04)",
+                    background: isSelected ? "var(--sr-border)" : "var(--sr-surface-2)",
                     border: isSelected
                       ? "1px solid rgba(255,215,0,0.55)"
-                      : "1px solid rgba(255,255,255,0.07)",
-                    color: isSelected ? "#ffd700" : "rgba(200,150,50,0.5)",
-                    fontFamily: "Cinzel, serif",
-                    boxShadow: isSelected ? "0 0 12px rgba(255,215,0,0.18)" : "none",
+                      : "1px solid var(--sr-border-soft)",
+                    color: isSelected ? "var(--sr-wood-deep)" : "var(--sr-text-muted)",
+                    fontFamily: "Inter, sans-serif",
+                    boxShadow: isSelected ? "0 0 12px var(--sr-border)" : "none",
                   }}
                 >
                   <GoldCoin size={14} />
@@ -617,17 +616,17 @@ function CreateTableModal({
         {/* Pot info */}
         <div
           className="flex items-center justify-between px-4 py-2.5 rounded-xl"
-          style={{ background: "rgba(180,30,0,0.1)", border: "1px solid rgba(180,30,0,0.2)" }}
+          style={{ background: "rgba(167, 71, 64, 0.12)", border: "1px solid rgba(167, 71, 64, 0.18)" }}
         >
-          <span className="text-xs" style={{ color: "rgba(200,150,50,0.5)" }}>
+          <span className="text-xs" style={{ color: "var(--sr-text-muted)" }}>
             Победный приз:
           </span>
           <div className="flex items-center gap-1.5">
             <GoldCoin size={14} />
-            <span className="text-sm font-black" style={{ color: "#ffd700" }}>
+            <span className="text-sm font-black" style={{ color: "var(--sr-wood-deep)" }}>
               {pot}
             </span>
-            <span className="text-xs" style={{ color: "rgba(200,150,50,0.4)" }}>
+            <span className="text-xs" style={{ color: "var(--sr-text-muted)" }}>
               (взнос × 2)
             </span>
           </div>
@@ -638,7 +637,7 @@ function CreateTableModal({
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-xs text-center font-semibold"
-            style={{ color: "#f87171" }}
+            style={{ color: "#A74740" }}
           >
             ❌ Недостаточно жетонов для этого взноса
           </motion.p>
@@ -650,9 +649,9 @@ function CreateTableModal({
             onClick={onClose}
             className="flex-1 py-3 rounded-xl text-sm cursor-pointer transition-all active:scale-95"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              color: "rgba(200,150,50,0.6)",
-              border: "1px solid rgba(255,255,255,0.07)",
+              background: "var(--sr-surface-2)",
+              color: "var(--sr-text-muted)",
+              border: "1px solid var(--sr-border-soft)",
             }}
           >
             Отмена
@@ -662,9 +661,9 @@ function CreateTableModal({
             disabled={creating || !canAfford}
             className="flex-1 py-3 rounded-xl text-sm font-bold cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
             style={{
-              background: "linear-gradient(135deg, #b8860b, #ffd700)",
-              color: "#1a0800",
-              fontFamily: "Cinzel, serif",
+              background: "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)",
+              color: "var(--sr-surface)",
+              fontFamily: "Inter, sans-serif",
               boxShadow: canAfford ? "0 4px 16px rgba(180,140,0,0.35)" : "none",
             }}
           >
@@ -703,11 +702,11 @@ function EmptyState({ onCreate, filter }: { onCreate: () => void; filter: FeeFil
 
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-4">
-      <div style={{ filter: "drop-shadow(0 0 16px rgba(212,175,55,0.4))" }}>
+      <div style={{ filter: "drop-shadow(0 0 16px var(--sr-text-muted))" }}>
         <svg viewBox="0 0 80 52" width="64" height="42">
           <defs>
             <linearGradient id="emGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#FFD700" />
+              <stop offset="0%" stopColor="var(--sr-wood-deep)" />
               <stop offset="100%" stopColor="#B8860B" />
             </linearGradient>
           </defs>
@@ -718,16 +717,16 @@ function EmptyState({ onCreate, filter }: { onCreate: () => void; filter: FeeFil
             strokeWidth="1"
           />
           <rect x="8" y="40" width="64" height="10" rx="3" fill="url(#emGrad)" />
-          <circle cx="40" cy="6" r="4" fill="#DC143C" stroke="#FFD700" strokeWidth="0.8" />
+          <circle cx="40" cy="6" r="4" fill="#DC143C" stroke="var(--sr-wood-deep)" strokeWidth="0.8" />
         </svg>
       </div>
       <p
         className="text-base font-bold"
-        style={{ color: "rgba(212,175,55,0.7)", fontFamily: "Cinzel, serif" }}
+        style={{ color: "var(--sr-text)", fontFamily: "Inter, sans-serif" }}
       >
         {msg}
       </p>
-      <p className="text-sm" style={{ color: "rgba(200,150,50,0.4)" }}>
+      <p className="text-sm" style={{ color: "var(--sr-text-muted)" }}>
         {sub}
       </p>
       <button
@@ -735,9 +734,9 @@ function EmptyState({ onCreate, filter }: { onCreate: () => void; filter: FeeFil
         className="mt-2 px-8 py-4 text-sm font-bold cursor-pointer active:scale-95 transition-all"
         style={{
           borderRadius: "12px",
-          background: "linear-gradient(135deg, #b8860b, #ffd700)",
-          color: "#1a0800",
-          fontFamily: "Cinzel, serif",
+          background: "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)",
+          color: "var(--sr-surface)",
+          fontFamily: "Inter, sans-serif",
           border: "1px solid #D4AF37",
           boxShadow: "0 4px 20px rgba(180,140,0,0.35)",
         }}
@@ -755,7 +754,7 @@ function LoadingSkeleton() {
         <div
           key={i}
           className="h-20 rounded-2xl animate-pulse"
-          style={{ background: "rgba(255,255,255,0.04)" }}
+          style={{ background: "var(--sr-surface-2)" }}
         />
       ))}
     </div>
@@ -766,10 +765,10 @@ function NoSupabase() {
   return (
     <div className="flex flex-col items-center justify-center py-20 gap-4 text-center px-4">
       <p className="text-4xl">⚙️</p>
-      <p className="text-sm font-semibold" style={{ color: "rgba(200,150,50,0.7)" }}>
+      <p className="text-sm font-semibold" style={{ color: "var(--sr-text)" }}>
         Supabase не настроен
       </p>
-      <p className="text-xs leading-relaxed" style={{ color: "rgba(200,150,50,0.4)" }}>
+      <p className="text-xs leading-relaxed" style={{ color: "var(--sr-text-muted)" }}>
         Добавьте{" "}
         <code className="bg-black/30 px-1 rounded">VITE_SUPABASE_URL</code> и{" "}
         <code className="bg-black/30 px-1 rounded">VITE_SUPABASE_ANON_KEY</code> в Secrets

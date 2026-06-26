@@ -24,81 +24,73 @@ export default function PlayerCard({
   const winStreak = profile?.win_streak ?? 0;
 
   const isWhite = color === "white";
-  const bgColor = isWhite
-    ? "rgba(212,175,55,0.08)"
-    : "rgba(80,60,20,0.12)";
-  const borderColor = isActive
-    ? isWhite
-      ? "rgba(212,175,55,0.5)"
-      : "rgba(212,175,55,0.3)"
-    : "rgba(212,175,55,0.15)";
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
-      className="flex items-center gap-3 px-4 py-3 rounded-xl"
+      className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
       style={{
-        background: bgColor,
-        border: `1px solid ${borderColor}`,
-        opacity: isActive ? 1 : 0.6,
+        background: isActive
+          ? "linear-gradient(135deg, #FFFDF8 0%, #FAF3E6 100%)"
+          : "var(--sr-surface-2)",
+        border: `1px solid ${isActive ? "var(--sr-border-strong)" : "var(--sr-border-soft)"}`,
+        opacity: isActive ? 1 : 0.7,
+        boxShadow: isActive ? "var(--sr-shadow-sm)" : "none",
       }}
     >
-      {/* Avatar */}
       <div className="relative flex-shrink-0">
         {avatarUrl ? (
           <img
             src={avatarUrl}
             alt={displayName}
-            className="w-12 h-12 rounded-full object-cover border-2"
-            style={{ borderColor: "#D4AF37" }}
+            className="w-11 h-11 rounded-full object-cover"
+            style={{ border: "1.5px solid var(--sr-border-strong)" }}
             onError={(e) => {
-              // Fallback to symbol if image fails
               (e.currentTarget as HTMLImageElement).style.display = "none";
             }}
           />
         ) : null}
         {!avatarUrl && (
           <div
-            className="w-12 h-12 rounded-full flex items-center justify-center text-xl border-2"
+            className="w-11 h-11 rounded-full flex items-center justify-center text-lg"
             style={{
               background: isWhite
-                ? "radial-gradient(circle at 35% 35%, #FFFFFF 0%, #D4B896 100%)"
-                : "radial-gradient(circle at 35% 35%, #555 0%, #000 100%)",
-              borderColor: "#D4AF37",
+                ? "radial-gradient(circle at 35% 32%, #FFFFFF 0%, #F4E8D0 45%, #D9C39E 100%)"
+                : "radial-gradient(circle at 35% 32%, #5A5048 0%, #2E2620 50%, #1A1410 100%)",
+              border: `1.5px solid ${isWhite ? "#BFA078" : "#3A2F26"}`,
+              color: isWhite ? "#5C3F18" : "#E8CC85",
             }}
           >
             {symbolAvatar}
           </div>
         )}
-        {/* Active indicator */}
         {isActive && (
           <motion.div
-            className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full"
+            className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full"
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ repeat: Infinity, duration: 1.5 }}
             style={{
-              background: "#4CAF50",
-              border: "2px solid #fff",
-              boxShadow: "0 0 8px rgba(76,175,80,0.8)",
+              background: "#56815D",
+              border: "2px solid #FFFDF8",
+              boxShadow: "0 0 8px rgba(86,129,93,0.6)",
             }}
           />
         )}
       </div>
 
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <p
-          className="text-sm font-semibold truncate"
-          style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}
+          className="text-sm font-bold truncate"
+          style={{ color: "var(--sr-text)", fontFamily: "Inter, sans-serif" }}
         >
           {displayName}
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mt-0.5">
           <p
-            className="text-xs"
-            style={{ color: "rgba(212,175,55,0.6)" }}
+            className="text-xs font-medium"
+            style={{ color: "var(--sr-text-muted)" }}
           >
             Рейтинг: {rating}
           </p>
@@ -107,10 +99,10 @@ export default function PlayerCard({
               data-testid="win-streak-badge"
               className="text-[10px] font-bold px-1.5 py-0.5 rounded"
               style={{
-                background: "rgba(255,80,0,0.18)",
-                border: "1px solid rgba(255,140,0,0.45)",
-                color: "#ffb347",
-                fontFamily: "Cinzel, serif",
+                background: "rgba(232, 142, 64, 0.15)",
+                border: "1px solid rgba(232, 142, 64, 0.45)",
+                color: "#A85A1F",
+                fontFamily: "Inter, sans-serif",
                 lineHeight: 1,
               }}
               title={`Серия побед: ${winStreak}`}
@@ -121,13 +113,10 @@ export default function PlayerCard({
         </div>
       </div>
 
-      {/* Timer (if provided) */}
       {timeRemaining !== undefined && isActive && (
         <div
           className="text-sm font-bold"
-          style={{
-            color: timeRemaining > 10 ? "#4CAF50" : "#FF6B6B",
-          }}
+          style={{ color: timeRemaining > 10 ? "#56815D" : "var(--sr-danger)" }}
         >
           {Math.ceil(timeRemaining)}s
         </div>

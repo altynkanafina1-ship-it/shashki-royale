@@ -16,13 +16,14 @@ export default function AuthHeader({ title, subtitle, showBack = true }: AuthHea
       {showBack && (
         <motion.button
           onClick={() => navigate(-1)}
-          whileHover={{ scale: 1.1 }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="p-2 rounded-lg transition-all"
+          className="p-2 rounded-xl transition-all"
           style={{
-            background: "rgba(212,175,55,0.08)",
-            border: "1px solid rgba(212,175,55,0.15)",
-            color: "#D4AF37",
+            background: "var(--sr-surface)",
+            border: "1px solid var(--sr-border)",
+            color: "var(--sr-wood-deep)",
+            boxShadow: "var(--sr-shadow-sm)",
           }}
           title="Вернуться назад"
         >
@@ -32,12 +33,12 @@ export default function AuthHeader({ title, subtitle, showBack = true }: AuthHea
       <div className="flex-1 text-center">
         <h1
           className="text-3xl font-bold mb-1"
-          style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}
+          style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
         >
           {title}
         </h1>
         {subtitle && (
-          <p style={{ color: "rgba(212,175,55,0.6)" }}>
+          <p style={{ color: "var(--sr-text-muted)" }}>
             {subtitle}
           </p>
         )}

@@ -17,21 +17,6 @@ interface GameResultModalProps {
   isLoading?: boolean;
 }
 
-/**
- * Modal shown when a Coin-stake online match ends.
- *
- * Mobile-safe layout: the overlay does NOT prevent the inner panel from
- * scrolling. The inner panel is capped at `100dvh - safe-area` and contains
- * its own scroll, with a sticky CTA so the "На главный экран" button is
- * always reachable, even on a 360x640 device with a tall Android navigation
- * bar.
- *
- * Settlement (Coin payout) is performed exactly once by the parent component
- * BEFORE this modal mounts (via processGameResult RPC, which is idempotent
- * on the server). Re-rendering / closing / reopening this modal will NOT
- * trigger a second payout — the `result` prop is already-settled data read
- * from the parent state.
- */
 export function GameResultModal({ result, onClose, isLoading = false }: GameResultModalProps) {
   if (!result) return null;
 
@@ -47,8 +32,10 @@ export function GameResultModal({ result, onClose, isLoading = false }: GameResu
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start sm:items-center justify-center"
+          className="fixed inset-0 z-50 flex items-start sm:items-center justify-center"
           style={{
+            background: "rgba(43, 27, 10, 0.35)",
+            backdropFilter: "blur(8px)",
             paddingTop: "max(env(safe-area-inset-top, 0px), 16px)",
             paddingBottom: "max(env(safe-area-inset-bottom, 0px), 16px)",
             paddingLeft: "max(env(safe-area-inset-left, 0px), 12px)",
@@ -65,8 +52,9 @@ export function GameResultModal({ result, onClose, isLoading = false }: GameResu
             transition={{ type: "spring", damping: 22 }}
             className="rounded-3xl w-full shadow-2xl flex flex-col relative"
             style={{
-              background: "linear-gradient(180deg, rgba(26,8,0,0.97) 0%, rgba(13,4,0,0.97) 100%)",
-              border: "2px solid rgba(212,175,55,0.4)",
+              background: "linear-gradient(180deg, #FFFDF8 0%, #FAF3E6 100%)",
+              border: "1px solid var(--sr-border-strong)",
+              boxShadow: "0 24px 60px rgba(80,55,30,0.28), 0 4px 14px rgba(80,55,30,0.12)",
               maxWidth: "28rem",
               maxHeight:
                 "calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 32px)",
@@ -75,16 +63,11 @@ export function GameResultModal({ result, onClose, isLoading = false }: GameResu
             onClick={(e) => e.stopPropagation()}
             data-testid="game-result-modal"
           >
-            {/* Scrollable content area */}
             <div
               className="px-6 pt-8 pb-4 flex-1 min-h-0 overflow-y-auto"
-              style={{
-                WebkitOverflowScrolling: "touch",
-                overscrollBehavior: "contain",
-              }}
+              style={{ WebkitOverflowScrolling: "touch", overscrollBehavior: "contain" }}
               data-testid="game-result-scroll"
             >
-              {/* Header */}
               <div className="text-center mb-6">
                 <motion.div
                   initial={{ scale: 0 }}
@@ -94,24 +77,28 @@ export function GameResultModal({ result, onClose, isLoading = false }: GameResu
                 >
                   <div
                     className="w-16 h-16 rounded-full flex items-center justify-center"
-                    style={{ background: "rgba(212,175,55,0.2)" }}
+                    style={{
+                      background: "linear-gradient(135deg, #FAF3E6 0%, #F0E1C4 100%)",
+                      border: "1px solid var(--sr-border-strong)",
+                      boxShadow: "var(--sr-shadow-sm)",
+                    }}
                   >
                     {isDraw ? (
-                      <Zap className="w-8 h-8" style={{ color: "#FFD700" }} />
+                      <Zap className="w-8 h-8" style={{ color: "var(--sr-wood-deep)" }} />
                     ) : (
-                      <Trophy className="w-8 h-8" style={{ color: "#FFD700" }} />
+                      <Trophy className="w-8 h-8" style={{ color: "var(--sr-wood-deep)" }} />
                     )}
                   </div>
                 </motion.div>
 
                 <h2
                   className="text-2xl font-bold mb-1"
-                  style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}
+                  style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
                   data-testid="game-result-title"
                 >
                   {isDraw ? "Ничья!" : "Игра завершена!"}
                 </h2>
-                <p style={{ color: "rgba(212,175,55,0.6)", fontSize: "0.875rem" }}>
+                <p style={{ color: "var(--sr-text-muted)", fontSize: "0.875rem" }}>
                   {isDraw
                     ? "Обе стороны сыграли вничью"
                     : result.winner === "white"
@@ -120,78 +107,70 @@ export function GameResultModal({ result, onClose, isLoading = false }: GameResu
                 </p>
               </div>
 
-              {/* Players */}
               <div className="space-y-2 mb-5">
                 <div
                   className="flex justify-between items-center p-2.5 rounded-lg"
-                  style={{ background: "rgba(212,175,55,0.08)" }}
+                  style={{ background: "var(--sr-surface-2)", border: "1px solid var(--sr-border)" }}
                 >
-                  <span className="text-sm" style={{ color: "#D4AF37" }}>
+                  <span className="text-sm font-medium" style={{ color: "var(--sr-text)" }}>
                     {result.whitePlayer}
                   </span>
                   <span
                     className="font-bold text-sm"
-                    style={{
-                      color: result.winner === "white" ? "#FFD700" : "rgba(212,175,55,0.5)",
-                    }}
+                    style={{ color: result.winner === "white" ? "var(--sr-wood-deep)" : "var(--sr-text-muted)" }}
                   >
                     ♟ Белые
                   </span>
                 </div>
                 <div
                   className="flex justify-between items-center p-2.5 rounded-lg"
-                  style={{ background: "rgba(212,175,55,0.08)" }}
+                  style={{ background: "var(--sr-surface-2)", border: "1px solid var(--sr-border)" }}
                 >
-                  <span className="text-sm" style={{ color: "#D4AF37" }}>
+                  <span className="text-sm font-medium" style={{ color: "var(--sr-text)" }}>
                     {result.blackPlayer}
                   </span>
                   <span
                     className="font-bold text-sm"
-                    style={{
-                      color: result.winner === "black" ? "#FFD700" : "rgba(212,175,55,0.5)",
-                    }}
+                    style={{ color: result.winner === "black" ? "var(--sr-wood-deep)" : "var(--sr-text-muted)" }}
                   >
                     ♟ Чёрные
                   </span>
                 </div>
               </div>
 
-              {/* Stakes Info */}
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
                 className="rounded-xl p-3 mb-5"
                 style={{
-                  background:
-                    "linear-gradient(135deg, rgba(212,175,55,0.15) 0%, rgba(255,215,0,0.1) 100%)",
-                  border: "1px solid rgba(212,175,55,0.2)",
+                  background: "linear-gradient(135deg, #FAF3E6 0%, #F0E1C4 100%)",
+                  border: "1px solid var(--sr-border-strong)",
                 }}
               >
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between">
-                    <span style={{ color: "rgba(212,175,55,0.6)" }}>Ставка за игрока:</span>
-                    <span style={{ color: "#D4AF37" }}>
-                      {result.entryFee.toFixed(2)} 💎
+                    <span style={{ color: "var(--sr-text-muted)" }}>Ставка за игрока:</span>
+                    <span style={{ color: "var(--sr-text)", fontWeight: 600 }}>
+                      {result.entryFee.toFixed(2)} Coin
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span style={{ color: "rgba(212,175,55,0.6)" }}>Общий пул:</span>
-                    <span style={{ color: "#FFD700" }}>{result.pot.toFixed(2)} 💎</span>
+                    <span style={{ color: "var(--sr-text-muted)" }}>Общий пул:</span>
+                    <span style={{ color: "var(--sr-wood-deep)", fontWeight: 700 }}>{result.pot.toFixed(2)} Coin</span>
                   </div>
                   {commission > 0 && (
                     <div
                       className="flex justify-between pt-1.5 border-t"
-                      style={{ borderColor: "rgba(212,175,55,0.2)" }}
+                      style={{ borderColor: "var(--sr-border)" }}
                     >
-                      <span style={{ color: "rgba(212,175,55,0.6)" }}>Комиссия (5%):</span>
-                      <span style={{ color: "#ef4444" }}>-{commission.toFixed(2)} 💎</span>
+                      <span style={{ color: "var(--sr-text-muted)" }}>Комиссия (5%):</span>
+                      <span style={{ color: "var(--sr-danger)", fontWeight: 600 }}>-{commission.toFixed(2)} Coin</span>
                     </div>
                   )}
                 </div>
               </motion.div>
 
-              {/* Payout */}
               {isWinner && payout > 0 && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -199,19 +178,15 @@ export function GameResultModal({ result, onClose, isLoading = false }: GameResu
                   transition={{ delay: 0.3 }}
                   className="rounded-xl p-3 mb-4 text-center"
                   style={{
-                    background:
-                      "linear-gradient(135deg, rgba(74,222,128,0.18) 0%, rgba(34,197,94,0.08) 100%)",
-                    border: "2px solid rgba(74,222,128,0.3)",
+                    background: "linear-gradient(135deg, #EAF3EA 0%, #DCEEDF 100%)",
+                    border: "1px solid rgba(86,129,93,0.45)",
                   }}
                   data-testid="payout-block"
                 >
-                  <p style={{ color: "rgba(74,222,128,0.7)", fontSize: "0.8rem" }}>Ваш выигрыш</p>
+                  <p style={{ color: "#3D5F45", fontSize: "0.8rem", fontWeight: 600 }}>Ваш выигрыш</p>
                   <div className="flex items-center justify-center gap-2 mt-1">
-                    <Gift className="w-5 h-5" style={{ color: "#4ade80" }} />
-                    <p
-                      className="text-2xl font-bold"
-                      style={{ color: "#4ade80", fontFamily: "Cinzel, serif" }}
-                    >
+                    <Gift className="w-5 h-5" style={{ color: "#56815D" }} />
+                    <p className="text-2xl font-bold" style={{ color: "#3D5F45", fontFamily: "Cinzel, serif" }}>
                       +{payout.toFixed(2)}
                     </p>
                   </div>
@@ -225,21 +200,15 @@ export function GameResultModal({ result, onClose, isLoading = false }: GameResu
                   transition={{ delay: 0.3 }}
                   className="rounded-xl p-3 mb-4 text-center"
                   style={{
-                    background:
-                      "linear-gradient(135deg, rgba(59,130,246,0.18) 0%, rgba(37,99,235,0.08) 100%)",
-                    border: "2px solid rgba(59,130,246,0.3)",
+                    background: "linear-gradient(135deg, #E3EDF5 0%, #D5E2EE 100%)",
+                    border: "1px solid rgba(63,110,148,0.45)",
                   }}
                   data-testid="refund-block"
                 >
-                  <p style={{ color: "rgba(59,130,246,0.7)", fontSize: "0.8rem" }}>
-                    Ставка возвращена
-                  </p>
+                  <p style={{ color: "#365A78", fontSize: "0.8rem", fontWeight: 600 }}>Ставка возвращена</p>
                   <div className="flex items-center justify-center gap-2 mt-1">
-                    <Gift className="w-5 h-5" style={{ color: "#3b82f6" }} />
-                    <p
-                      className="text-2xl font-bold"
-                      style={{ color: "#3b82f6", fontFamily: "Cinzel, serif" }}
-                    >
+                    <Gift className="w-5 h-5" style={{ color: "#3F6E94" }} />
+                    <p className="text-2xl font-bold" style={{ color: "#365A78", fontFamily: "Cinzel, serif" }}>
                       +{result.entryFee.toFixed(2)}
                     </p>
                   </div>
@@ -247,27 +216,27 @@ export function GameResultModal({ result, onClose, isLoading = false }: GameResu
               )}
             </div>
 
-            {/* Sticky action area — always visible above Android nav bar */}
             <div
               className="px-6 pt-3 rounded-b-3xl"
               style={{
                 paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)",
-                background:
-                  "linear-gradient(0deg, rgba(13,4,0,0.97) 0%, rgba(13,4,0,0.85) 80%, rgba(13,4,0,0) 100%)",
-                borderTop: "1px solid rgba(212,175,55,0.15)",
+                background: "linear-gradient(0deg, #FAF3E6 0%, rgba(250,243,230,0.85) 80%, rgba(250,243,230,0) 100%)",
+                borderTop: "1px solid var(--sr-border)",
                 flexShrink: 0,
               }}
             >
               <motion.button
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={onClose}
                 disabled={isLoading}
-                className="w-full py-3 rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                 style={{
-                  background: "linear-gradient(135deg, #D4AF37 0%, #FFD700 100%)",
-                  color: "#0d0400",
-                  fontFamily: "Cinzel, serif",
+                  background: "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)",
+                  color: "#2B1B0A",
+                  fontFamily: "Inter, sans-serif",
+                  border: "1px solid rgba(167,126,46,0.55)",
+                  boxShadow: "0 4px 14px rgba(167,126,46,0.22)",
                 }}
                 data-testid="game-result-home-btn"
               >

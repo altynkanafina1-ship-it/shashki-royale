@@ -28,11 +28,18 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Production game URL. Preview builds replace this constant in the CI
+    // workspace only (see .github/workflows/build-light-premium-preview-apk.yml).
+    // Do NOT commit a preview URL here.
     private static final String GAME_URL = "https://shashki-royale.pages.dev/?apk=148";
+
+    // Light premium background (must match res/values/colors.xml brand_background).
+    private static final int LIGHT_BACKGROUND = Color.parseColor("#F5EFE6");
 
     private WebView webView;
     private SwipeRefreshLayout refreshLayout;
@@ -49,11 +56,17 @@ public class MainActivity extends AppCompatActivity {
         setTheme(R.style.Theme_ShashkiRoyale);
         super.onCreate(savedInstanceState);
 
-        // Edge-to-edge
+        // Edge-to-edge with light system bars + dark icons.
         try {
             WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-            getWindow().setStatusBarColor(Color.parseColor("#1A0800"));
-            getWindow().setNavigationBarColor(Color.parseColor("#1A0800"));
+            getWindow().setStatusBarColor(LIGHT_BACKGROUND);
+            getWindow().setNavigationBarColor(LIGHT_BACKGROUND);
+            WindowInsetsControllerCompat controller =
+                    WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+            if (controller != null) {
+                controller.setAppearanceLightStatusBars(true);
+                controller.setAppearanceLightNavigationBars(true);
+            }
         } catch (Throwable ignored) {}
 
         setContentView(R.layout.activity_main);
@@ -117,8 +130,10 @@ public class MainActivity extends AppCompatActivity {
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setTextZoom(100);
-        settings.setUserAgentString(settings.getUserAgentString() + " ShashkiRoyaleAPK/1.4.3");
-        webView.setBackgroundColor(Color.parseColor("#0A0503"));
+        settings.setUserAgentString(settings.getUserAgentString() + " ShashkiRoyaleAPK/" + BuildConfig.VERSION_NAME);
+        // Light premium background — prevents the historical dark flash before
+        // the page paints.
+        webView.setBackgroundColor(LIGHT_BACKGROUND);
 
         CookieManager cm = CookieManager.getInstance();
         cm.setAcceptCookie(true);
@@ -129,10 +144,11 @@ public class MainActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest req) {
                 Uri url = req.getUrl();
                 String host = url.getHost();
-                if (host != null && (host.contains("shashki-royale.pages.dev")
-                        || host.contains("supabase.co")
-                        || host.contains("supabase.in"))) {
-                    return false; // stay in webview
+                if (host != null && (host.equals("shashki-royale.pages.dev")
+                        || host.endsWith(".shashki-royale.pages.dev")
+                        || host.endsWith(".supabase.co")
+                        || host.endsWith(".supabase.in"))) {
+                    return false; // stay in webview (covers prod + branch previews + immutable deployments)
                 }
                 try {
                     Intent i = new Intent(Intent.ACTION_VIEW, url);

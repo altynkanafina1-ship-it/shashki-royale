@@ -51,7 +51,7 @@ export default function LoginPage() {
       className="min-h-screen flex flex-col px-4 py-4 overflow-y-auto"
       style={{
         background:
-          "radial-gradient(ellipse at 50% 0%, rgba(120,50,0,0.35) 0%, transparent 60%), linear-gradient(180deg, #0d0400 0%, #1a0800 50%, #0d0400 100%)",
+          "transparent",
       }}
     >
       <motion.div
@@ -66,9 +66,9 @@ export default function LoginPage() {
           whileTap={{ scale: 0.95 }}
           className="self-start p-2 rounded-lg mb-3"
           style={{
-            background: "rgba(212,175,55,0.08)",
-            border: "1px solid rgba(212,175,55,0.15)",
-            color: "#D4AF37",
+            background: "var(--sr-surface)",
+            border: "1px solid var(--sr-border)",
+            color: "var(--sr-wood-deep)",
           }}
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,19 +78,19 @@ export default function LoginPage() {
 
         {/* Header */}
         <div className="text-center mb-4">
-          <h1 className="text-3xl font-bold mb-1" style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}>
+          <h1 className="text-3xl font-bold mb-1" style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}>
             ♔ Шашки Рояль ♔
           </h1>
-          <p className="text-sm" style={{ color: "rgba(212,175,55,0.6)" }}>Вход в игру</p>
+          <p className="text-sm" style={{ color: "var(--sr-text-muted)" }}>Вход в игру</p>
         </div>
 
         {/* Main Card */}
         <div
           className="p-5 rounded-2xl"
           style={{
-            background: "rgba(26, 8, 0, 0.9)",
-            border: "1px solid rgba(212,175,55,0.25)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+            background: "var(--sr-surface)",
+            border: "1px solid var(--sr-border-strong)",
+            boxShadow: "0 8px 32px rgba(80,55,30,0.15)",
           }}
         >
           {/* Quick Play */}
@@ -100,9 +100,11 @@ export default function LoginPage() {
             whileTap={{ scale: 0.98 }}
             className="w-full py-3.5 rounded-xl font-bold text-lg mb-3"
             style={{
-              background: "linear-gradient(135deg, #FFD700 0%, #FF8C00 100%)",
-              color: "#0d0400",
-              boxShadow: "0 0 20px rgba(255,215,0,0.2)",
+              background: "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)",
+              color: "#2B1B0A",
+              border: "1px solid rgba(167,126,46,0.55)",
+              boxShadow: "0 6px 18px rgba(167,126,46,0.25)",
+              fontFamily: "Inter, sans-serif",
             }}
           >
             Играть сразу
@@ -116,9 +118,9 @@ export default function LoginPage() {
             whileTap={{ scale: 0.98 }}
             className="w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 mb-4 disabled:opacity-50"
             style={{
-              background: "rgba(255,255,255,0.95)",
+              background: "var(--sr-surface)",
               color: "#333",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+              boxShadow: "0 2px 8px rgba(80,55,30,0.10)",
             }}
           >
             {googleLoading ? (
@@ -138,15 +140,15 @@ export default function LoginPage() {
 
           {/* Divider */}
           <div className="flex items-center gap-3 mb-4">
-            <div className="flex-1 h-px" style={{ background: "rgba(212,175,55,0.2)" }} />
-            <span className="text-xs" style={{ color: "rgba(212,175,55,0.5)" }}>или email</span>
-            <div className="flex-1 h-px" style={{ background: "rgba(212,175,55,0.2)" }} />
+            <div className="flex-1 h-px" style={{ background: "var(--sr-border)" }} />
+            <span className="text-xs" style={{ color: "var(--sr-text-muted)" }}>или email</span>
+            <div className="flex-1 h-px" style={{ background: "var(--sr-border)" }} />
           </div>
 
           {/* Email/Password Form */}
           <form onSubmit={handleLogin} className="space-y-3">
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "rgba(212,175,55,0.5)" }} />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--sr-text-muted)" }} />
               <input
                 type="email"
                 value={email}
@@ -154,15 +156,15 @@ export default function LoginPage() {
                 placeholder="your@email.com"
                 className="w-full pl-9 pr-4 py-2.5 rounded-lg outline-none text-sm"
                 style={{
-                  background: "rgba(212,175,55,0.08)",
-                  border: "1px solid rgba(212,175,55,0.2)",
-                  color: "#fff",
+                  background: "var(--sr-surface)",
+                  border: "1px solid var(--sr-border)",
+                  color: "var(--sr-text)",
                 }}
               />
             </div>
 
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "rgba(212,175,55,0.5)" }} />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--sr-text-muted)" }} />
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
@@ -170,13 +172,13 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 className="w-full pl-9 pr-9 py-2.5 rounded-lg outline-none text-sm"
                 style={{
-                  background: "rgba(212,175,55,0.08)",
-                  border: "1px solid rgba(212,175,55,0.2)",
-                  color: "#fff",
+                  background: "var(--sr-surface)",
+                  border: "1px solid var(--sr-border)",
+                  color: "var(--sr-text)",
                 }}
               />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2">
-                {showPassword ? <EyeOff className="w-4 h-4" style={{ color: "rgba(212,175,55,0.5)" }} /> : <Eye className="w-4 h-4" style={{ color: "rgba(212,175,55,0.5)" }} />}
+                {showPassword ? <EyeOff className="w-4 h-4" style={{ color: "var(--sr-text-muted)" }} /> : <Eye className="w-4 h-4" style={{ color: "var(--sr-text-muted)" }} />}
               </button>
             </div>
 
@@ -186,8 +188,11 @@ export default function LoginPage() {
               whileTap={{ scale: 0.98 }}
               className="w-full py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 disabled:opacity-50"
               style={{
-                background: "linear-gradient(135deg, #D4AF37 0%, #FFD700 100%)",
-                color: "#0d0400",
+                background: "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)",
+                color: "#2B1B0A",
+                border: "1px solid rgba(167,126,46,0.55)",
+                boxShadow: "0 4px 14px rgba(167,126,46,0.22)",
+                fontFamily: "Inter, sans-serif",
               }}
             >
               {loading ? <Loader className="w-5 h-5 animate-spin" /> : "Войти"}
@@ -197,13 +202,13 @@ export default function LoginPage() {
           {/* Links */}
           <div className="mt-4 text-center space-y-2">
             {supabaseConfigured && (
-              <Link to="/auth/forgot-password" className="text-xs block" style={{ color: "rgba(212,175,55,0.6)" }}>
+              <Link to="/auth/forgot-password" className="text-xs block" style={{ color: "var(--sr-text-muted)" }}>
                 Забыли пароль?
               </Link>
             )}
-            <p className="text-xs" style={{ color: "rgba(212,175,55,0.6)" }}>
+            <p className="text-xs" style={{ color: "var(--sr-text-muted)" }}>
               Нет аккаунта?{" "}
-              <Link to="/auth/register" className="font-semibold" style={{ color: "#D4AF37" }}>
+              <Link to="/auth/register" className="font-semibold" style={{ color: "var(--sr-wood-deep)" }}>
                 Зарегистрироваться
               </Link>
             </p>

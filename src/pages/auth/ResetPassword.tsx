@@ -67,7 +67,7 @@ export default function ResetPasswordPage() {
           >
             <Check className="w-8 h-8 text-green-400" />
           </div>
-          <h2 className="text-xl font-bold mb-2" style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}>
+          <h2 className="text-xl font-bold mb-2" style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}>
             Пароль обновлён!
           </h2>
           <p className="text-sm" style={{ color: "rgba(212,175,55,0.7)" }}>
@@ -90,22 +90,22 @@ export default function ResetPasswordPage() {
         className="w-full max-w-sm p-6 rounded-2xl"
         style={{
           background: "rgba(20,10,5,0.95)",
-          border: "1px solid rgba(212,175,55,0.25)",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+          border: "1px solid var(--sr-border-strong)",
+          boxShadow: "0 20px 60px rgba(80,55,30,0.15)",
         }}
       >
         {/* Header */}
         <div className="text-center mb-6">
           <div
             className="w-14 h-14 mx-auto mb-3 rounded-full flex items-center justify-center"
-            style={{ background: "rgba(212,175,55,0.15)", border: "2px solid rgba(212,175,55,0.3)" }}
+            style={{ background: "var(--sr-border)", border: "2px solid rgba(212,175,55,0.3)" }}
           >
-            <Lock className="w-7 h-7" style={{ color: "#D4AF37" }} />
+            <Lock className="w-7 h-7" style={{ color: "var(--sr-wood-deep)" }} />
           </div>
-          <h1 className="text-xl font-bold" style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}>
+          <h1 className="text-xl font-bold" style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}>
             Новый пароль
           </h1>
-          <p className="text-xs mt-1" style={{ color: "rgba(212,175,55,0.6)" }}>
+          <p className="text-xs mt-1" style={{ color: "var(--sr-text-muted)" }}>
             Введите новый пароль для вашего аккаунта
           </p>
         </div>
@@ -114,7 +114,7 @@ export default function ResetPasswordPage() {
         <form onSubmit={handleReset} className="space-y-4">
           {/* Password */}
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "rgba(212,175,55,0.5)" }} />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--sr-text-muted)" }} />
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Новый пароль"
@@ -122,9 +122,9 @@ export default function ResetPasswordPage() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full pl-10 pr-10 py-3 rounded-xl text-sm outline-none"
               style={{
-                background: "rgba(212,175,55,0.08)",
-                border: "1px solid rgba(212,175,55,0.2)",
-                color: "#FFD700",
+                background: "var(--sr-surface)",
+                border: "1px solid var(--sr-border)",
+                color: "var(--sr-wood-deep)",
               }}
             />
             <button
@@ -133,16 +133,16 @@ export default function ResetPasswordPage() {
               className="absolute right-3 top-1/2 -translate-y-1/2"
             >
               {showPassword ? (
-                <EyeOff className="w-4 h-4" style={{ color: "rgba(212,175,55,0.5)" }} />
+                <EyeOff className="w-4 h-4" style={{ color: "var(--sr-text-muted)" }} />
               ) : (
-                <Eye className="w-4 h-4" style={{ color: "rgba(212,175,55,0.5)" }} />
+                <Eye className="w-4 h-4" style={{ color: "var(--sr-text-muted)" }} />
               )}
             </button>
           </div>
 
           {/* Confirm Password */}
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "rgba(212,175,55,0.5)" }} />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--sr-text-muted)" }} />
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Подтвердите пароль"
@@ -150,9 +150,9 @@ export default function ResetPasswordPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full pl-10 pr-4 py-3 rounded-xl text-sm outline-none"
               style={{
-                background: "rgba(212,175,55,0.08)",
-                border: "1px solid rgba(212,175,55,0.2)",
-                color: "#FFD700",
+                background: "var(--sr-surface)",
+                border: "1px solid var(--sr-border)",
+                color: "var(--sr-wood-deep)",
               }}
             />
           </div>
@@ -166,8 +166,8 @@ export default function ResetPasswordPage() {
             style={{
               background: loading
                 ? "rgba(212,175,55,0.3)"
-                : "linear-gradient(135deg, #D4AF37 0%, #FFD700 100%)",
-              color: "#0d0400",
+                : "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)",
+              color: "#2B1B0A",
               cursor: loading ? "not-allowed" : "pointer",
             }}
           >

@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
       className="min-h-screen flex items-center justify-center px-4"
       style={{
         background:
-          "radial-gradient(ellipse at 50% 0%, rgba(120,50,0,0.35) 0%, transparent 60%), linear-gradient(180deg, #0d0400 0%, #1a0800 50%, #0d0400 100%)",
+          "transparent",
       }}
     >
       <motion.div
@@ -45,20 +45,20 @@ export default function ForgotPasswordPage() {
         <div className="text-center mb-8">
           <h1
             className="text-4xl font-bold mb-2"
-            style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}
+            style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
           >
             ♔ Шашки Рояль ♔
           </h1>
-          <p style={{ color: "rgba(212,175,55,0.6)" }}>Восстановление пароля</p>
+          <p style={{ color: "var(--sr-text-muted)" }}>Восстановление пароля</p>
         </div>
 
         {/* Form Card */}
         <div
           className="p-8 rounded-2xl backdrop-blur-sm"
           style={{
-            background: "rgba(26, 8, 0, 0.9)",
-            border: "1px solid rgba(212,175,55,0.25)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+            background: "var(--sr-surface)",
+            border: "1px solid var(--sr-border-strong)",
+            boxShadow: "0 8px 32px rgba(80,55,30,0.15)",
           }}
         >
           {!submitted ? (
@@ -74,14 +74,14 @@ export default function ForgotPasswordPage() {
               <div>
                 <label
                   className="block text-sm font-semibold mb-2"
-                  style={{ color: "#D4AF37", fontFamily: "Cinzel, serif" }}
+                  style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
                 >
                   Email
                 </label>
                 <div className="relative">
                   <Mail
                     className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
-                    style={{ color: "rgba(212,175,55,0.5)" }}
+                    style={{ color: "var(--sr-text-muted)" }}
                   />
                   <input
                     type="email"
@@ -90,15 +90,15 @@ export default function ForgotPasswordPage() {
                     placeholder="your@email.com"
                     className="w-full pl-10 pr-4 py-3 rounded-lg bg-opacity-50 outline-none transition-all"
                     style={{
-                      background: "rgba(212,175,55,0.08)",
-                      border: "1px solid rgba(212,175,55,0.2)",
-                      color: "#fff",
+                      background: "var(--sr-surface)",
+                      border: "1px solid var(--sr-border)",
+                      color: "var(--sr-text)",
                     }}
                     onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(212,175,55,0.5)";
+                      e.currentTarget.style.borderColor = "var(--sr-text-muted)";
                     }}
                     onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(212,175,55,0.2)";
+                      e.currentTarget.style.borderColor = "var(--sr-border)";
                     }}
                   />
                 </div>
@@ -112,8 +112,8 @@ export default function ForgotPasswordPage() {
                 whileTap={{ scale: 0.98 }}
                 className="w-full py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
                 style={{
-                  background: "linear-gradient(135deg, #D4AF37 0%, #FFD700 100%)",
-                  color: "#0d0400",
+                  background: "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)",
+                  color: "#2B1B0A",
                 }}
               >
                 {loading ? (
@@ -131,15 +131,15 @@ export default function ForgotPasswordPage() {
               <div className="flex justify-center">
                 <div
                   className="w-16 h-16 rounded-full flex items-center justify-center"
-                  style={{ background: "rgba(212,175,55,0.2)" }}
+                  style={{ background: "var(--sr-border)" }}
                 >
-                  <Check className="w-8 h-8" style={{ color: "#D4AF37" }} />
+                  <Check className="w-8 h-8" style={{ color: "var(--sr-wood-deep)" }} />
                 </div>
               </div>
               <div>
                 <h2
                   className="text-xl font-bold mb-2"
-                  style={{ color: "#D4AF37", fontFamily: "Cinzel, serif" }}
+                  style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
                 >
                   Проверьте email
                 </h2>
@@ -152,7 +152,7 @@ export default function ForgotPasswordPage() {
               </div>
               <p
                 className="text-xs"
-                style={{ color: "rgba(212,175,55,0.5)" }}
+                style={{ color: "var(--sr-text-muted)" }}
               >
                 Ссылка действительна 1 час. Если письмо не пришло, проверьте папку спама.
               </p>
@@ -160,16 +160,16 @@ export default function ForgotPasswordPage() {
           )}
 
           {/* Back Link */}
-          <div className="mt-6 pt-6 border-t" style={{ borderColor: "rgba(212,175,55,0.2)" }}>
+          <div className="mt-6 pt-6 border-t" style={{ borderColor: "var(--sr-border)" }}>
             <Link
               to="/auth/login"
               className="flex items-center justify-center gap-2 text-sm font-semibold transition-colors"
-              style={{ color: "#D4AF37" }}
+              style={{ color: "var(--sr-wood-deep)" }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = "#FFD700";
+                e.currentTarget.style.color = "var(--sr-wood-deep)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = "#D4AF37";
+                e.currentTarget.style.color = "var(--sr-wood-deep)";
               }}
             >
               <ArrowLeft className="w-4 h-4" />

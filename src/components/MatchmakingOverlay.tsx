@@ -8,25 +8,6 @@ interface MatchmakingOverlayProps {
   cancelling: boolean;
 }
 
-/**
- * Full-screen overlay shown to the white player while the matchmaker is
- * waiting for an opponent to join the stake game.
- *
- * The board is hidden behind a translucent backdrop so the user gets a clear
- * "we're looking for an opponent" affordance instead of an empty board with
- * a tiny header label.
- *
- * Lifecycle:
- *   - parent (OnlineGame) mounts this when game.status === 'waiting' and the
- *     viewer is the game creator (white).
- *   - parent unmounts as soon as the opponent's profile id appears on the
- *     game row (handled via realtime UPDATE → applyGameRow flips
- *     opponentConnected to true).
- *   - parent passes `cancelling=true` while the cancel RPC is in flight.
- *
- * `onCancel` is required: it calls cancel_stake_game RPC (which refunds the
- * white player's locked stake) and navigates back home.
- */
 export default function MatchmakingOverlay({
   stake,
   onCancel,
@@ -42,7 +23,6 @@ export default function MatchmakingOverlay({
   const mm = String(Math.floor(elapsedSec / 60)).padStart(2, "0");
   const ss = String(elapsedSec % 60).padStart(2, "0");
 
-  // After 30s, gently hint that the user can cancel and try a different stake.
   const showLongWaitHint = elapsedSec >= 30;
 
   return (
@@ -53,8 +33,8 @@ export default function MatchmakingOverlay({
       className="fixed inset-0 z-40 flex items-center justify-center px-6"
       style={{
         background:
-          "radial-gradient(ellipse at center, rgba(26,8,0,0.92) 0%, rgba(10,5,3,0.97) 70%, rgba(0,0,0,0.98) 100%)",
-        backdropFilter: "blur(6px)",
+          "radial-gradient(ellipse at center, rgba(255,253,248,0.96) 0%, rgba(245,239,230,0.97) 70%, rgba(232,220,200,0.98) 100%)",
+        backdropFilter: "blur(8px)",
       }}
       data-testid="matchmaking-overlay"
     >
@@ -67,70 +47,38 @@ export default function MatchmakingOverlay({
           style={{
             width: 96,
             height: 96,
-            filter: "drop-shadow(0 0 24px rgba(255,215,0,0.5))",
+            filter: "drop-shadow(0 8px 22px rgba(167,126,46,0.28))",
           }}
         >
           <svg viewBox="0 0 100 100" width="96" height="96">
             <defs>
               <radialGradient id="mm-coin-grad" cx="40%" cy="35%" r="65%">
-                <stop offset="0%" stopColor="#FFE566" />
-                <stop offset="50%" stopColor="#FFD700" />
-                <stop offset="100%" stopColor="#B8860B" />
+                <stop offset="0%" stopColor="#F3DEA0" />
+                <stop offset="50%" stopColor="#E0BD6A" />
+                <stop offset="100%" stopColor="#A77E2E" />
               </radialGradient>
             </defs>
-            <circle
-              cx="50"
-              cy="50"
-              r="46"
-              fill="url(#mm-coin-grad)"
-              stroke="#D4AF37"
-              strokeWidth="2"
-            />
-            <circle
-              cx="50"
-              cy="50"
-              r="38"
-              fill="none"
-              stroke="rgba(255,255,255,0.3)"
-              strokeWidth="1"
-            />
-            <text
-              x="50"
-              y="68"
-              textAnchor="middle"
-              fontSize="44"
-              fontWeight="900"
-              fill="#7a5200"
-              fontFamily="serif"
-            >
+            <circle cx="50" cy="50" r="46" fill="url(#mm-coin-grad)" stroke="#9C7530" strokeWidth="2" />
+            <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1" />
+            <text x="50" y="68" textAnchor="middle" fontSize="44" fontWeight="900" fill="#5C3F18" fontFamily="serif">
               ₡
             </text>
           </svg>
         </motion.div>
 
         <h2
-          className="text-2xl font-black tracking-widest uppercase mb-2"
+          className="text-2xl font-black tracking-[0.12em] mb-2"
           style={{
             fontFamily: "Cinzel, serif",
-            background:
-              "linear-gradient(180deg, #FFD700 0%, #B8860B 60%, #FFD700 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            filter: "drop-shadow(0 2px 6px rgba(180,130,0,0.5))",
+            color: "var(--sr-wood-deep)",
           }}
         >
           Ищем соперника
         </h2>
 
         <div className="flex items-center justify-center gap-1.5 mb-4">
-          <Loader2
-            className="w-4 h-4 animate-spin"
-            style={{ color: "#D4AF37" }}
-          />
-          <span
-            className="text-sm tracking-wider"
-            style={{ color: "rgba(212,175,55,0.75)", fontFamily: "Cinzel, serif" }}
-          >
+          <Loader2 className="w-4 h-4 animate-spin" style={{ color: "var(--sr-wood-mid)" }} />
+          <span className="text-sm font-medium tracking-wider" style={{ color: "var(--sr-text-muted)" }}>
             {mm}:{ss}
           </span>
         </div>
@@ -139,55 +87,34 @@ export default function MatchmakingOverlay({
           <div
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl mb-6"
             style={{
-              background:
-                "linear-gradient(135deg, rgba(184,134,11,0.18) 0%, rgba(255,215,0,0.08) 100%)",
-              border: "1px solid rgba(255,215,0,0.35)",
+              background: "linear-gradient(135deg, #FAF3E6 0%, #F0E1C4 100%)",
+              border: "1px solid var(--sr-border-strong)",
+              boxShadow: "var(--sr-shadow-sm)",
             }}
           >
-            <svg viewBox="0 0 24 24" width="16" height="16">
+            <svg viewBox="0 0 24 24" width="18" height="18">
               <defs>
                 <radialGradient id="mm-stake-coin" cx="40%" cy="35%" r="65%">
-                  <stop offset="0%" stopColor="#FFE566" />
-                  <stop offset="50%" stopColor="#FFD700" />
-                  <stop offset="100%" stopColor="#B8860B" />
+                  <stop offset="0%" stopColor="#F3DEA0" />
+                  <stop offset="50%" stopColor="#E0BD6A" />
+                  <stop offset="100%" stopColor="#A77E2E" />
                 </radialGradient>
               </defs>
-              <circle
-                cx="12"
-                cy="12"
-                r="11"
-                fill="url(#mm-stake-coin)"
-                stroke="#D4AF37"
-                strokeWidth="0.8"
-              />
-              <text
-                x="12"
-                y="16.5"
-                textAnchor="middle"
-                fontSize="9"
-                fontWeight="bold"
-                fill="#7a5200"
-                fontFamily="serif"
-              >
+              <circle cx="12" cy="12" r="11" fill="url(#mm-stake-coin)" stroke="#9C7530" strokeWidth="0.8" />
+              <text x="12" y="16.5" textAnchor="middle" fontSize="9" fontWeight="bold" fill="#5C3F18" fontFamily="serif">
                 ₡
               </text>
             </svg>
-            <span
-              className="text-sm font-bold"
-              style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}
-            >
+            <span className="text-sm font-bold" style={{ color: "var(--sr-wood-deep)", fontFamily: "Inter, sans-serif" }}>
               Ставка: {stake} Coin
             </span>
           </div>
         )}
 
-        <p
-          className="text-xs mb-6 leading-snug"
-          style={{ color: "rgba(212,175,55,0.55)" }}
-        >
+        <p className="text-sm mb-6 leading-relaxed" style={{ color: "var(--sr-text-muted)" }}>
           {showLongWaitHint
-            ? "Пока не нашли соперника на эту ставку. Можно подождать или отменить и выбрать другую."
-            : "Как только найдётся игрок с такой же ставкой — игра начнётся автоматически."}
+            ? "Пока не нашли соперника на эту ставку. Можно подождать или отменить."
+            : "Как только найдётся игрок — игра начнётся автоматически."}
         </p>
 
         <button
@@ -195,28 +122,21 @@ export default function MatchmakingOverlay({
           onClick={onCancel}
           disabled={cancelling}
           data-testid="matchmaking-cancel-btn"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold uppercase tracking-widest cursor-pointer transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold cursor-pointer transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
           style={{
-            background:
-              "linear-gradient(135deg, rgba(180,30,0,0.25) 0%, rgba(120,20,0,0.18) 100%)",
-            border: "1px solid rgba(220,50,30,0.45)",
-            color: "#FF8A80",
-            fontFamily: "Cinzel, serif",
+            background: "var(--sr-surface)",
+            border: "1px solid rgba(167, 71, 64, 0.5)",
+            color: "var(--sr-danger)",
+            fontFamily: "Inter, sans-serif",
             minWidth: 180,
+            boxShadow: "var(--sr-shadow-sm)",
           }}
         >
-          {cancelling ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <X className="w-4 h-4" />
-          )}
+          {cancelling ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
           {cancelling ? "Отмена…" : "Отменить поиск"}
         </button>
 
-        <p
-          className="text-[10px] mt-4"
-          style={{ color: "rgba(212,175,55,0.4)" }}
-        >
+        <p className="text-xs mt-4" style={{ color: "var(--sr-text-subtle)" }}>
           Ставка вернётся на ваш баланс
         </p>
       </div>

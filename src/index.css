@@ -4,9 +4,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ─────────────────────────────────────────────────────────────────
+   "ШАШКИ РОЯЛЬ" — LIGHT PREMIUM VISUAL SYSTEM (v2.0)
+   Tokens describe a warm "wood + ivory" board-game world inspired by
+   classic checkers sets, Apple-grade clarity and Chess.com warmth.
+   This replaces the previous dark "casino" palette across the entire app.
+   ─────────────────────────────────────────────────────────────────*/
+
 @theme inline {
   --font-sans:
-    "Cinzel", "Montserrat", ui-sans-serif, system-ui, sans-serif;
+    "Inter", "Montserrat", ui-sans-serif, system-ui, sans-serif;
   --font-mono:
     "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
@@ -50,73 +57,119 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* ─────────────────────────────────────────────────────────────────
+   Brand semantic tokens (used throughout the app via var())
+   These are intentionally exposed at :root so existing inline styles
+   can be migrated incrementally without breaking anything.
+   ─────────────────────────────────────────────────────────────────*/
 :root {
-  --radius: 0.5rem;
-  --background: oklch(0.1 0.01 30);
-  --foreground: oklch(0.95 0.02 80);
-  --card: oklch(0.14 0.015 30);
-  --card-foreground: oklch(0.95 0.02 80);
-  --popover: oklch(0.14 0.015 30);
-  --popover-foreground: oklch(0.95 0.02 80);
-  --primary: oklch(0.72 0.18 60);
-  --primary-foreground: oklch(0.1 0.01 30);
-  --secondary: oklch(0.18 0.02 30);
-  --secondary-foreground: oklch(0.95 0.02 80);
-  --muted: oklch(0.18 0.015 30);
-  --muted-foreground: oklch(0.6 0.04 60);
-  --accent: oklch(0.55 0.22 25);
-  --accent-foreground: oklch(0.97 0.01 80);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.25 0.03 50);
-  --input: oklch(0.2 0.02 30);
-  --ring: oklch(0.72 0.18 60);
-  --chart-1: oklch(0.72 0.18 60);
-  --chart-2: oklch(0.55 0.22 25);
-  --chart-3: oklch(0.4 0.1 30);
-  --chart-4: oklch(0.8 0.12 80);
-  --chart-5: oklch(0.65 0.15 50);
-  --sidebar: oklch(0.12 0.01 30);
-  --sidebar-foreground: oklch(0.95 0.02 80);
-  --sidebar-primary: oklch(0.72 0.18 60);
-  --sidebar-primary-foreground: oklch(0.1 0.01 30);
-  --sidebar-accent: oklch(0.18 0.02 30);
-  --sidebar-accent-foreground: oklch(0.95 0.02 80);
-  --sidebar-border: oklch(0.25 0.03 50);
-  --sidebar-ring: oklch(0.72 0.18 60);
+  --radius: 0.75rem;
+
+  /* Brand semantic palette — light premium board game */
+  --sr-bg:               #F5EFE6;  /* warm ivory app background */
+  --sr-bg-soft:          #EFE6D8;  /* secondary background tint */
+  --sr-bg-deep:          #E8DCC8;  /* deeper warm beige for variety */
+  --sr-surface:          #FFFDF8;  /* primary card / panel surface */
+  --sr-surface-2:        #FAF3E6;  /* secondary surface */
+  --sr-surface-muted:    #EDE1D2;  /* third-tier surface */
+
+  --sr-text:             #2B241E;  /* primary text (warm near-black) */
+  --sr-text-muted:       #77695D;  /* secondary text */
+  --sr-text-subtle:      #A9988A;  /* tertiary text */
+  --sr-text-on-dark:     #FBF6EC;  /* text on dark accents */
+
+  --sr-border:           #D9C9B7;  /* default border */
+  --sr-border-soft:      #E6D7C2;  /* soft border */
+  --sr-border-strong:    #C2AB8D;  /* emphasized border */
+
+  --sr-wood-light:       #D7B48A;  /* light wood */
+  --sr-wood-mid:         #B58863;  /* mid wood (board dark squares) */
+  --sr-wood-deep:        #815B43;  /* deep wood / accent */
+  --sr-board-light:      #F0E1C4;  /* board light squares (creamy ivory) */
+  --sr-board-frame:      #A9794E;  /* board frame */
+  --sr-board-frame-deep: #7A5235;  /* board outer frame */
+
+  --sr-gold:             #C39A48;  /* soft gold accent */
+  --sr-gold-deep:        #A77E2E;  /* deep gold hover */
+  --sr-gold-soft:        #E3C97B;  /* soft gold tint */
+
+  --sr-danger:           #A74740;  /* danger / resign */
+  --sr-danger-soft:      #E9C7C4;
+  --sr-success:          #56815D;  /* success / online */
+  --sr-success-soft:     #C7DCC8;
+  --sr-info:             #3F6E94;  /* info / cool accent */
+  --sr-warning:          #BC8B33;  /* warning */
+
+  --sr-piece-white-1:    #FFFFFF;
+  --sr-piece-white-2:    #F2E5CC;
+  --sr-piece-white-rim:  #BFA078;
+  --sr-piece-black-1:    #4A4138;
+  --sr-piece-black-2:    #1F1916;
+  --sr-piece-black-rim:  #3A302A;
+
+  --sr-shadow-sm:    0 1px 2px rgba(60,40,20,0.08);
+  --sr-shadow-md:    0 4px 14px rgba(80,55,30,0.10);
+  --sr-shadow-lg:    0 12px 36px rgba(80,55,30,0.14);
+  --sr-shadow-card:  0 2px 12px rgba(120,90,50,0.10), 0 0 0 1px rgba(120,90,50,0.04);
+  --sr-shadow-board: 0 18px 40px rgba(80,55,30,0.18), 0 4px 10px rgba(80,55,30,0.08);
+
+  /* shadcn semantic mappings — keep dark fallback for any third-party
+     components, but the visible UI now uses the warm light palette. */
+  --background:          var(--sr-bg);
+  --foreground:          var(--sr-text);
+  --card:                var(--sr-surface);
+  --card-foreground:     var(--sr-text);
+  --popover:             var(--sr-surface);
+  --popover-foreground:  var(--sr-text);
+  --primary:             var(--sr-gold);
+  --primary-foreground:  #1F1815;
+  --secondary:           var(--sr-surface-2);
+  --secondary-foreground: var(--sr-text);
+  --muted:               var(--sr-surface-muted);
+  --muted-foreground:    var(--sr-text-muted);
+  --accent:              var(--sr-wood-mid);
+  --accent-foreground:   var(--sr-text-on-dark);
+  --destructive:         var(--sr-danger);
+  --border:              var(--sr-border);
+  --input:               var(--sr-surface);
+  --ring:                var(--sr-gold);
+  --chart-1:             var(--sr-gold);
+  --chart-2:             var(--sr-wood-mid);
+  --chart-3:             var(--sr-info);
+  --chart-4:             var(--sr-success);
+  --chart-5:             var(--sr-warning);
+  --sidebar:             var(--sr-surface);
+  --sidebar-foreground:  var(--sr-text);
+  --sidebar-primary:     var(--sr-gold);
+  --sidebar-primary-foreground: #1F1815;
+  --sidebar-accent:      var(--sr-surface-muted);
+  --sidebar-accent-foreground: var(--sr-text);
+  --sidebar-border:      var(--sr-border);
+  --sidebar-ring:        var(--sr-gold);
 }
 
+/* Honor dark-mode preference but keep our light brand intact —
+   the product is intentionally light. We expose the same tokens so
+   any future dark-mode revival can be done without rewriting. */
 .dark {
-  --background: oklch(0.1 0.01 30);
-  --foreground: oklch(0.95 0.02 80);
-  --card: oklch(0.14 0.015 30);
-  --card-foreground: oklch(0.95 0.02 80);
-  --popover: oklch(0.14 0.015 30);
-  --popover-foreground: oklch(0.95 0.02 80);
-  --primary: oklch(0.72 0.18 60);
-  --primary-foreground: oklch(0.1 0.01 30);
-  --secondary: oklch(0.18 0.02 30);
-  --secondary-foreground: oklch(0.95 0.02 80);
-  --muted: oklch(0.18 0.015 30);
-  --muted-foreground: oklch(0.6 0.04 60);
-  --accent: oklch(0.55 0.22 25);
-  --accent-foreground: oklch(0.97 0.01 80);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.25 0.03 50);
-  --input: oklch(0.2 0.02 30);
-  --ring: oklch(0.72 0.18 60);
-  --chart-1: oklch(0.72 0.18 60);
-  --chart-2: oklch(0.55 0.22 25);
-  --chart-3: oklch(0.4 0.1 30);
-  --chart-4: oklch(0.8 0.12 80);
-  --chart-5: oklch(0.65 0.15 50);
-  --sidebar: oklch(0.12 0.01 30);
-  --sidebar-foreground: oklch(0.95 0.02 80);
-  --sidebar-primary: oklch(0.72 0.18 60);
-  --sidebar-primary-foreground: oklch(0.1 0.01 30);
-  --sidebar-accent: oklch(0.18 0.02 30);
-  --sidebar-accent-foreground: oklch(0.95 0.02 80);
-  --sidebar-border: oklch(0.25 0.03 50);
-  --sidebar-ring: oklch(0.72 0.18 60);
+  --background:          var(--sr-bg);
+  --foreground:          var(--sr-text);
+  --card:                var(--sr-surface);
+  --card-foreground:     var(--sr-text);
+  --popover:             var(--sr-surface);
+  --popover-foreground:  var(--sr-text);
+  --primary:             var(--sr-gold);
+  --primary-foreground:  #1F1815;
+  --secondary:           var(--sr-surface-2);
+  --secondary-foreground: var(--sr-text);
+  --muted:               var(--sr-surface-muted);
+  --muted-foreground:    var(--sr-text-muted);
+  --accent:              var(--sr-wood-mid);
+  --accent-foreground:   var(--sr-text-on-dark);
+  --destructive:         var(--sr-danger);
+  --border:              var(--sr-border);
+  --input:               var(--sr-surface);
+  --ring:                var(--sr-gold);
 }
 
 @layer base {
@@ -125,10 +178,20 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: "Montserrat", ui-sans-serif, sans-serif;
+    font-family: "Inter", "Montserrat", ui-sans-serif, sans-serif;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     overscroll-behavior: none;
+    color: var(--sr-text);
+    /* Soft warm radial backdrop + paper-grain via SVG noise. Lightweight,
+       no external assets — keeps PWA fast. */
+    background-color: var(--sr-bg);
+    background-image:
+      radial-gradient(ellipse at 50% -10%, rgba(255, 244, 220, 0.95) 0%, rgba(245, 239, 230, 0.0) 60%),
+      radial-gradient(ellipse at 50% 110%, rgba(225, 205, 175, 0.5) 0%, rgba(245, 239, 230, 0.0) 55%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.32 0 0 0 0 0.22 0 0 0 0.045 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    background-attachment: fixed;
+    background-size: auto, auto, 160px 160px;
   }
   /* Allow the app shell to grow to the dynamic viewport (handles Android nav bar
      and iOS safe-areas) and to scroll when content overflows. Individual game
@@ -154,6 +217,25 @@
     min-height: 100svh;
     overflow: hidden;
   }
+
+  /* Heading defaults — keep elegant serif for brand moments, never
+     uppercase the entire body. Components opt-in. */
+  h1, h2, h3 {
+    font-family: "Cinzel", ui-serif, Georgia, serif;
+    letter-spacing: 0.01em;
+  }
+
+  /* Accessible focus ring for keyboard users (button, a, input). */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid var(--sr-gold);
+    outline-offset: 2px;
+    border-radius: 10px;
+  }
 }
 
 /* Utility: safe-area aware padding for full-screen menus */
@@ -161,17 +243,18 @@
 .safe-pb { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); }
 .safe-px { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
 
-/* APK build proof marker (temporary, removed by setting --apk-marker:none) */
+/* APK build proof marker — now matches the light theme so it is no longer
+   a black pill on a light page. Still hidden in most flows. */
 #apk-fix-marker {
   position: fixed;
   right: 8px;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
   font-size: 10px;
   letter-spacing: 0.08em;
-  font-family: "Montserrat", sans-serif;
-  color: rgba(212,175,55,0.55);
-  background: rgba(26,8,0,0.55);
-  border: 1px solid rgba(212,175,55,0.25);
+  font-family: "Inter", sans-serif;
+  color: rgba(129, 91, 67, 0.55);
+  background: rgba(255, 253, 248, 0.65);
+  border: 1px solid rgba(195, 154, 72, 0.25);
   border-radius: 999px;
   padding: 2px 8px;
   pointer-events: none;
@@ -179,50 +262,53 @@
   backdrop-filter: blur(4px);
 }
 
+/* ──────────────────────────────────────────────────────────────
+   Animations — re-tuned for the light theme (softer glows)
+   ──────────────────────────────────────────────────────────────*/
 @keyframes invalidTapFlash {
   0% {
     opacity: 1;
-    background: rgba(255, 235, 59, 0.55);
+    background: rgba(220, 150, 60, 0.45);
   }
   100% {
     opacity: 0;
-    background: rgba(255, 235, 59, 0);
+    background: rgba(220, 150, 60, 0);
   }
 }
 
-@keyframes greenDotPulse {
+@keyframes srSelectedPulse {
   0% {
     transform: scale(1);
-    opacity: 0.7;
-    box-shadow: 0 0 6px rgba(76,175,80,0.6), inset 0 0 3px rgba(76,175,80,0.4);
+    opacity: 0.85;
+    box-shadow: 0 0 8px rgba(86, 129, 93, 0.55), inset 0 0 4px rgba(86, 129, 93, 0.35);
   }
   50% {
-    transform: scale(1.12);
+    transform: scale(1.08);
     opacity: 1;
-    box-shadow: 0 0 12px rgba(76,175,80,0.9), inset 0 0 6px rgba(76,175,80,0.6);
+    box-shadow: 0 0 14px rgba(86, 129, 93, 0.85), inset 0 0 8px rgba(86, 129, 93, 0.5);
   }
   100% {
     transform: scale(1);
-    opacity: 0.7;
-    box-shadow: 0 0 6px rgba(76,175,80,0.6), inset 0 0 3px rgba(76,175,80,0.4);
+    opacity: 0.85;
+    box-shadow: 0 0 8px rgba(86, 129, 93, 0.55), inset 0 0 4px rgba(86, 129, 93, 0.35);
   }
 }
 
-@keyframes greenRingPulse {
+@keyframes srRingPulse {
   0% {
     transform: scale(1);
-    opacity: 0.8;
-    box-shadow: 0 0 10px rgba(76,175,80,0.6), 0 0 20px rgba(76,175,80,0.3), inset 0 0 6px rgba(76,175,80,0.2);
+    opacity: 0.85;
+    box-shadow: 0 0 8px rgba(86, 129, 93, 0.5), 0 0 14px rgba(86, 129, 93, 0.25);
   }
   50% {
-    transform: scale(1.06);
+    transform: scale(1.05);
     opacity: 1;
-    box-shadow: 0 0 16px rgba(76,175,80,0.9), 0 0 30px rgba(76,175,80,0.5), inset 0 0 10px rgba(76,175,80,0.3);
+    box-shadow: 0 0 14px rgba(86, 129, 93, 0.8), 0 0 22px rgba(86, 129, 93, 0.4);
   }
   100% {
     transform: scale(1);
-    opacity: 0.8;
-    box-shadow: 0 0 10px rgba(76,175,80,0.6), 0 0 20px rgba(76,175,80,0.3), inset 0 0 6px rgba(76,175,80,0.2);
+    opacity: 0.85;
+    box-shadow: 0 0 8px rgba(86, 129, 93, 0.5), 0 0 14px rgba(86, 129, 93, 0.25);
   }
 }
 
@@ -237,38 +323,73 @@
   }
 }
 
-@keyframes moveDotPulse {
+@keyframes srGoldPulse {
   0% {
     transform: scale(1);
-    opacity: 0.8;
-    box-shadow: 0 0 12px rgba(212,175,55,0.8), 0 0 20px rgba(255,215,0,0.4);
+    opacity: 0.85;
+    box-shadow: 0 0 8px rgba(195, 154, 72, 0.55);
   }
   50% {
-    transform: scale(1.15);
+    transform: scale(1.12);
     opacity: 1;
-    box-shadow: 0 0 20px rgba(212,175,55,1), 0 0 36px rgba(255,215,0,0.7);
+    box-shadow: 0 0 16px rgba(195, 154, 72, 0.9);
   }
   100% {
     transform: scale(1);
-    opacity: 0.8;
-    box-shadow: 0 0 12px rgba(212,175,55,0.8), 0 0 20px rgba(255,215,0,0.4);
+    opacity: 0.85;
+    box-shadow: 0 0 8px rgba(195, 154, 72, 0.55);
   }
 }
 
+/* Legacy alias names — keep so any straggler component animations don't
+   suddenly break during migration. Mapped to new soft-light keyframes. */
+@keyframes greenDotPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; box-shadow: 0 0 8px rgba(86,129,93,0.55), inset 0 0 4px rgba(86,129,93,0.35); }
+  50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 14px rgba(86,129,93,0.8); }
+}
+@keyframes greenRingPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; box-shadow: 0 0 8px rgba(86,129,93,0.5); }
+  50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 14px rgba(86,129,93,0.8); }
+}
+@keyframes moveDotPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; box-shadow: 0 0 8px rgba(195,154,72,0.6); }
+  50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 14px rgba(195,154,72,0.9); }
+}
 @keyframes captureRingPulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.9;
-    box-shadow: 0 0 16px rgba(255,215,0,0.7), 0 0 28px rgba(212,175,55,0.5), inset 0 0 10px rgba(255,215,0,0.2);
-  }
-  50% {
-    transform: scale(1.08);
-    opacity: 1;
-    box-shadow: 0 0 24px rgba(255,215,0,0.95), 0 0 40px rgba(212,175,55,0.7), inset 0 0 14px rgba(255,215,0,0.4);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.9;
-    box-shadow: 0 0 16px rgba(255,215,0,0.7), 0 0 28px rgba(212,175,55,0.5), inset 0 0 10px rgba(255,215,0,0.2);
+  0%, 100% { transform: scale(1); opacity: 0.85; box-shadow: 0 0 10px rgba(195,154,72,0.55); }
+  50% { transform: scale(1.06); opacity: 1; box-shadow: 0 0 16px rgba(195,154,72,0.85); }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Reusable utility classes (used across the app)
+   ──────────────────────────────────────────────────────────────*/
+.sr-card {
+  background: var(--sr-surface);
+  border: 1px solid var(--sr-border);
+  border-radius: 16px;
+  box-shadow: var(--sr-shadow-card);
+}
+.sr-card-soft {
+  background: var(--sr-surface-2);
+  border: 1px solid var(--sr-border-soft);
+  border-radius: 16px;
+}
+
+.sr-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sr-border), transparent);
+}
+
+.sr-text-brand {
+  font-family: "Cinzel", ui-serif, Georgia, serif;
+  color: var(--sr-wood-deep);
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

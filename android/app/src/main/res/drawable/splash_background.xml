@@ -7,6 +7,9 @@
   on API 26+ @mipmap/ic_launcher resolves to an <adaptive-icon> XML (not a
   real bitmap) and BitmapDrawable.inflate() throws an InflateException,
   crashing the activity before onCreate is called.
+
+  Light premium splash — solid ivory background with the launcher
+  foreground centered, matching the new in-app palette.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/brand_background" />

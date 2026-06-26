@@ -1,12 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.ShashkiRoyale" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="Theme.ShashkiRoyale" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/brand_gold</item>
         <item name="colorPrimaryDark">@color/brand_background_dark</item>
-        <item name="colorAccent">@color/brand_red</item>
+        <item name="colorAccent">@color/brand_wood</item>
         <item name="android:windowBackground">@color/brand_background</item>
-        <item name="android:statusBarColor">@color/brand_background_dark</item>
-        <item name="android:navigationBarColor">@color/brand_background_dark</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+        <item name="android:statusBarColor">@color/brand_background</item>
+        <item name="android:navigationBarColor">@color/brand_background</item>
+        <!-- Dark icons on light system bars (API 23+ status, API 27+ nav) -->
+        <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+        <item name="android:textColorPrimary">@color/brand_text_primary</item>
+        <item name="android:textColorSecondary">@color/brand_text_muted</item>
     </style>
 
     <style name="Theme.ShashkiRoyale.Splash" parent="Theme.ShashkiRoyale">

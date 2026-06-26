@@ -1,0 +1,363 @@
+name: Build Light Premium Preview APK
+
+# Triggers:
+#   * workflow_dispatch — manual reruns with custom inputs (preferred for reruns).
+#   * push to feat/light-premium-game-theme — ensures the workflow is registered
+#     by GitHub Actions (a workflow_dispatch-only file on a non-default branch
+#     is otherwise invisible to the dispatch API) and produces an initial run.
+#     We DO skip runs whose head commit message contains [skip preview-apk] so
+#     repeated docs-only pushes don't accidentally bump the prerelease tag.
+on:
+  push:
+    branches: [feat/light-premium-game-theme]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - ".github/workflows/build-apk.yml"
+      - ".github/workflows/build-android-apk.yml"
+      - ".github/workflows/deploy-cloudflare-pages.yml"
+  workflow_dispatch:
+    inputs:
+      preview_url:
+        description: "Preview URL the APK will load"
+        default: "https://feat-light-premium-game-them.shashki-royale.pages.dev/?apk=light-premium-preview"
+        required: true
+      release_tag:
+        description: "Release tag (must be unique)"
+        default: "v2.0.0-light-premium-preview.1"
+        required: true
+      version_code:
+        description: "Android versionCode for the preview APK"
+        default: "20001"
+        required: true
+      version_name:
+        description: "Android versionName for the preview APK"
+        default: "2.0.0-light-premium-preview.1"
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # to create the GitHub Release
+    env:
+      # Centralised inputs — fall back to sensible defaults when the workflow
+      # is triggered by `push` (where `inputs.*` is empty).
+      PREVIEW_URL: ${{ inputs.preview_url || 'https://feat-light-premium-game-them.shashki-royale.pages.dev/?apk=light-premium-preview' }}
+      RELEASE_TAG: ${{ inputs.release_tag || 'v2.0.0-light-premium-preview.1' }}
+      VERSION_CODE: ${{ inputs.version_code || '20001' }}
+      VERSION_NAME: ${{ inputs.version_name || '2.0.0-light-premium-preview.1' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # pnpm MUST be on PATH before setup-node runs with `cache: pnpm`.
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with: { version: 10 }
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with: { node-version: "22", cache: "pnpm" }
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install required SDK packages
+        run: |
+          yes | sdkmanager --licenses > /dev/null
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Install Gradle 8.4
+        run: |
+          curl -sL https://services.gradle.org/distributions/gradle-8.4-bin.zip -o /tmp/gradle.zip
+          unzip -q -o /tmp/gradle.zip -d $HOME/
+          echo "$HOME/gradle-8.4/bin" >> $GITHUB_PATH
+          $HOME/gradle-8.4/bin/gradle --version
+
+      # ----------------------------------------------------------------------
+      # Frontend build — proves the feature branch still builds. The output
+      # is NOT bundled into the APK (we ship a thin WebView that loads the
+      # already-deployed Cloudflare preview). Building here also guards
+      # against silent TS/Vite regressions on the feature branch.
+      # ----------------------------------------------------------------------
+      - name: Install JS deps
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Frontend build (vite)
+        run: pnpm exec vite build
+
+      # ----------------------------------------------------------------------
+      # CI-only patch: swap the production GAME_URL constant in MainActivity
+      # for the preview URL, and bump the version metadata. We patch the
+      # workspace, NOT git — nothing is committed back.
+      # ----------------------------------------------------------------------
+      - name: Patch preview URL + version into workspace (CI only, not committed)
+        run: |
+          python3 - <<'PY'
+          import os, re, sys, pathlib
+          preview = os.environ["PREVIEW_URL"]
+          vc = os.environ["VERSION_CODE"]
+          vn = os.environ["VERSION_NAME"]
+
+          main = pathlib.Path("android/app/src/main/java/com/shashkiroyale/app/MainActivity.java")
+          src = main.read_text()
+          new = re.sub(
+              r'private static final String GAME_URL = "[^"]+";',
+              f'private static final String GAME_URL = "{preview}";',
+              src,
+              count=1,
+          )
+          if new == src:
+              print("ERROR: GAME_URL constant not found in MainActivity.java", file=sys.stderr)
+              sys.exit(2)
+          main.write_text(new)
+
+          gradle = pathlib.Path("android/app/build.gradle")
+          g = gradle.read_text()
+          g2 = re.sub(r"versionCode\s+\d+", f"versionCode {vc}", g, count=1)
+          g2 = re.sub(r"versionName\s+'[^']+'", f"versionName '{vn}'", g2, count=1)
+          if g2 == g:
+              print("ERROR: versionCode/versionName not found in build.gradle", file=sys.stderr)
+              sys.exit(2)
+          gradle.write_text(g2)
+          print("Patched MainActivity.java and android/app/build.gradle")
+          PY
+
+      - name: Verify patch landed
+        run: |
+          echo "=== MainActivity.java GAME_URL ==="
+          grep -n "GAME_URL" android/app/src/main/java/com/shashkiroyale/app/MainActivity.java
+          echo "=== build.gradle versionCode/Name ==="
+          grep -nE "versionCode|versionName" android/app/build.gradle
+          # Fail the build if the production URL is still embedded.
+          if grep -q "shashki-royale.pages.dev/?apk=148" android/app/src/main/java/com/shashkiroyale/app/MainActivity.java; then
+            echo "ERROR: production URL still present in MainActivity.java" >&2
+            exit 3
+          fi
+          # Fail if the preview URL is NOT present.
+          if ! grep -q "${{ env.PREVIEW_URL }}" android/app/src/main/java/com/shashkiroyale/app/MainActivity.java; then
+            echo "ERROR: preview URL was not injected" >&2
+            exit 4
+          fi
+
+      # ----------------------------------------------------------------------
+      # Signing keystore. If a persistent RELEASE_KEYSTORE_B64 secret exists,
+      # use it (so the preview APK can update an installed production APK
+      # with the same signature). Otherwise generate an ephemeral keystore
+      # — preview APK will then NOT update over the production install and
+      # must be installed side-by-side or after uninstalling the old app.
+      # ----------------------------------------------------------------------
+      - name: Provision signing keystore
+        id: keystore
+        working-directory: android/app
+        run: |
+          if [ -n "${{ secrets.RELEASE_KEYSTORE_B64 }}" ]; then
+            echo "${{ secrets.RELEASE_KEYSTORE_B64 }}" | base64 -d > shashki.keystore
+            echo "signing_kind=persistent" >> $GITHUB_OUTPUT
+            echo "loaded persistent keystore from RELEASE_KEYSTORE_B64"
+          else
+            keytool -genkey -v -keystore shashki.keystore \
+              -alias shashki -keyalg RSA -keysize 2048 -validity 10950 \
+              -storepass shashki2026 -keypass shashki2026 \
+              -dname "CN=Shashki Royale Preview, OU=Game, O=ShashkiRoyale, L=Tashkent, ST=TK, C=UZ"
+            echo "signing_kind=ephemeral" >> $GITHUB_OUTPUT
+            echo "generated ephemeral preview keystore (no persistent secret available)"
+          fi
+          keytool -list -v -keystore shashki.keystore -storepass shashki2026 | head -25
+
+      - name: Local.properties
+        run: echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+
+      - name: Gradle clean + assembleRelease + assembleDebug
+        working-directory: android
+        env:
+          KEYSTORE_PATH: shashki.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD || 'shashki2026' }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS || 'shashki' }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'shashki2026' }}
+        run: |
+          $HOME/gradle-8.4/bin/gradle clean assembleRelease assembleDebug --no-daemon --stacktrace 2>&1 | tail -200
+
+      - name: Stage release artifacts
+        run: |
+          mkdir -p release
+          TAG="${{ env.RELEASE_TAG }}"
+          cp android/app/build/outputs/apk/release/app-release.apk \
+             release/shashki-royale-light-premium-preview-release.apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk \
+             release/shashki-royale-light-premium-preview-debug.apk
+          ls -la release/
+
+      - name: apksigner verify
+        run: |
+          BT=$(ls -d $ANDROID_HOME/build-tools/* | sort | tail -1)
+          {
+            echo "=== apksigner verify (release) ==="
+            "$BT/apksigner" verify --verbose --print-certs \
+              release/shashki-royale-light-premium-preview-release.apk
+            echo ""
+            echo "=== apksigner verify (debug) ==="
+            "$BT/apksigner" verify --verbose --print-certs \
+              release/shashki-royale-light-premium-preview-debug.apk
+          } | tee release/APK_VERIFICATION.txt
+
+      - name: aapt dump + permissions + contents
+        run: |
+          BT=$(ls -d $ANDROID_HOME/build-tools/* | sort | tail -1)
+          {
+            echo "=== aapt dump badging (release) ==="
+            "$BT/aapt" dump badging release/shashki-royale-light-premium-preview-release.apk
+            echo ""
+            echo "=== aapt dump permissions (release) ==="
+            "$BT/aapt" dump permissions release/shashki-royale-light-premium-preview-release.apk
+            echo ""
+            echo "=== unzip -l (release, first 60) ==="
+            unzip -l release/shashki-royale-light-premium-preview-release.apk | head -60
+          } | tee release/APK_CONTENTS.txt
+          echo ""
+          echo "=== APK sizes ==="
+          du -h release/*.apk
+
+      - name: SHA-256
+        run: |
+          {
+            echo "# SHA-256 checksums"
+            sha256sum release/shashki-royale-light-premium-preview-release.apk
+            sha256sum release/shashki-royale-light-premium-preview-debug.apk
+          } | tee release/shashki-royale-light-premium-preview-SHA256.txt
+
+      - name: Verify preview URL is actually inside the APK
+        run: |
+          if unzip -p release/shashki-royale-light-premium-preview-release.apk classes.dex \
+              | strings | grep -F "${{ env.PREVIEW_URL }}" >/dev/null; then
+            echo "OK: preview URL present in classes.dex"
+          else
+            echo "ERROR: preview URL not found in release classes.dex" >&2
+            unzip -p release/shashki-royale-light-premium-preview-release.apk classes.dex \
+              | strings | grep -F "shashki-royale.pages.dev" | head -20
+            exit 5
+          fi
+          # Also assert the production URL is NOT present in the preview APK.
+          if unzip -p release/shashki-royale-light-premium-preview-release.apk classes.dex \
+              | strings | grep -F "shashki-royale.pages.dev/?apk=148" >/dev/null; then
+            echo "ERROR: production URL leaked into preview APK" >&2
+            exit 6
+          fi
+          echo "OK: production URL not present in preview APK"
+
+      - name: build-info.json
+        run: |
+          SIZE_REL=$(stat -c%s release/shashki-royale-light-premium-preview-release.apk)
+          SIZE_DBG=$(stat -c%s release/shashki-royale-light-premium-preview-debug.apk)
+          SHA_REL=$(sha256sum release/shashki-royale-light-premium-preview-release.apk | awk '{print $1}')
+          SHA_DBG=$(sha256sum release/shashki-royale-light-premium-preview-debug.apk | awk '{print $1}')
+          cat > release/build-info.json <<EOF
+          {
+            "appName": "Шашки Рояль (Light Premium Preview)",
+            "previewUrl": "${{ env.PREVIEW_URL }}",
+            "productionUrl": "https://shashki-royale.pages.dev/",
+            "packageId": "com.shashkiroyale.app",
+            "versionName": "${{ env.VERSION_NAME }}",
+            "versionCode": ${{ env.VERSION_CODE }},
+            "buildType": "Native Android WebView preview APK",
+            "signing": "${{ steps.keystore.outputs.signing_kind }}",
+            "releaseApk": {
+              "name": "shashki-royale-light-premium-preview-release.apk",
+              "sizeBytes": $SIZE_REL,
+              "sha256": "$SHA_REL"
+            },
+            "debugApk": {
+              "name": "shashki-royale-light-premium-preview-debug.apk",
+              "sizeBytes": $SIZE_DBG,
+              "sha256": "$SHA_DBG"
+            },
+            "buildDate": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "gitCommit": "${{ github.sha }}",
+            "gitRef": "${{ github.ref }}",
+            "ciRun": "${{ github.run_id }}"
+          }
+          EOF
+          cat release/build-info.json
+
+      - name: Upload Actions artifact (raw release folder)
+        uses: actions/upload-artifact@v4
+        with:
+          name: shashki-royale-light-premium-preview-${{ env.RELEASE_TAG }}
+          path: release/
+          retention-days: 90
+
+      - name: Build release notes
+        id: notes
+        run: |
+          SIZE_REL=$(du -h release/shashki-royale-light-premium-preview-release.apk | awk '{print $1}')
+          SIZE_DBG=$(du -h release/shashki-royale-light-premium-preview-debug.apk | awk '{print $1}')
+          SHA_REL=$(sha256sum release/shashki-royale-light-premium-preview-release.apk | awk '{print $1}')
+          SHA_DBG=$(sha256sum release/shashki-royale-light-premium-preview-debug.apk | awk '{print $1}')
+          SIGNING="${{ steps.keystore.outputs.signing_kind }}"
+          if [ "$SIGNING" = "persistent" ]; then
+            INSTALL_NOTE="Подписан тем же persistent ключом, что и production APK — устанавливается поверх существующего приложения."
+          else
+            INSTALL_NOTE="Подписан **ephemeral** ключом, сгенерированным в CI. Поверх production-установки v1.4.8 не встанет — сначала удалите старую версию (или установите debug-вариант side-by-side: его applicationId оканчивается на \`.debug\`)."
+          fi
+          cat > release/RELEASE_NOTES.md <<EOF
+          ## Light Premium Preview APK
+
+          Тонкий Native Android WebView, который открывает развёрнутый на Cloudflare
+          Pages light premium preview ветки \`feat/light-premium-game-theme\`:
+
+          \`${{ env.PREVIEW_URL }}\`
+
+          Это **prerelease** для визуальной проверки светлой темы на реальном Android.
+          Игровая логика, backend, Supabase, RPC, RLS, экономика и matchmaking не менялись.
+
+          ### Параметры APK
+          - packageId: \`com.shashkiroyale.app\`
+          - versionName: \`${{ env.VERSION_NAME }}\`
+          - versionCode: \`${{ env.VERSION_CODE }}\`
+          - minSdk 21, targetSdk 34
+          - Подпись: $SIGNING (v1 JAR + v2 APK Signature Scheme)
+
+          ### Файлы
+          | Файл | Размер | SHA-256 |
+          |------|--------|---------|
+          | \`shashki-royale-light-premium-preview-release.apk\` | $SIZE_REL | \`$SHA_REL\` |
+          | \`shashki-royale-light-premium-preview-debug.apk\`   | $SIZE_DBG | \`$SHA_DBG\` |
+
+          ### Установка
+          $INSTALL_NOTE
+
+          ### Что нового по сравнению с v1.4.8
+          - Полный light premium visual redesign фронта (UI на Cloudflare preview).
+          - Native Android shell приведён к светлой палитре: status bar, navigation bar,
+            window background, splash, offline screen.
+          - Иконки status/nav bar тёмные (дружат со светлым фоном).
+          - WebView background больше не даёт чёрной вспышки до загрузки страницы.
+
+          Coin — внутренняя игровая валюта без денежной стоимости.
+          EOF
+          cat release/RELEASE_NOTES.md
+
+      - name: Create GitHub Prerelease + attach APKs
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: "Шашки Рояль ${{ env.VERSION_NAME }} — Light Premium Preview"
+          body_path: release/RELEASE_NOTES.md
+          prerelease: true
+          target_commitish: ${{ github.sha }}
+          files: |
+            release/shashki-royale-light-premium-preview-release.apk
+            release/shashki-royale-light-premium-preview-debug.apk
+            release/shashki-royale-light-premium-preview-SHA256.txt
+            release/APK_VERIFICATION.txt
+            release/APK_CONTENTS.txt
+            release/build-info.json
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

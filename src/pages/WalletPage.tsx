@@ -8,13 +8,13 @@ import { toast } from "sonner";
 import type { Wallet, WalletTransaction } from "../services/stakes";
 
 const TRANSACTION_ICONS: Record<string, React.ReactNode> = {
-  deposit: <Gift className="w-5 h-5" style={{ color: "#4ade80" }} />,
-  withdrawal: <TrendingDown className="w-5 h-5" style={{ color: "#ef4444" }} />,
-  fee_lock: <Lock className="w-5 h-5" style={{ color: "#f59e0b" }} />,
+  deposit: <Gift className="w-5 h-5" style={{ color: "#56815D" }} />,
+  withdrawal: <TrendingDown className="w-5 h-5" style={{ color: "#A74740" }} />,
+  fee_lock: <Lock className="w-5 h-5" style={{ color: "#BC8B33" }} />,
   fee_refund: <Unlock className="w-5 h-5" style={{ color: "#3b82f6" }} />,
-  prize_payout: <TrendingUp className="w-5 h-5" style={{ color: "#fbbf24" }} />,
+  prize_payout: <TrendingUp className="w-5 h-5" style={{ color: "#BC8B33" }} />,
   starting_bonus: <Gift className="w-5 h-5" style={{ color: "#a78bfa" }} />,
-  loss: <TrendingDown className="w-5 h-5" style={{ color: "#ef4444" }} />,
+  loss: <TrendingDown className="w-5 h-5" style={{ color: "#A74740" }} />,
 };
 
 const TRANSACTION_LABELS: Record<string, string> = {
@@ -60,39 +60,33 @@ export default function WalletPage() {
         <div className="text-center">
           <div
             className="w-12 h-12 rounded-full border-4 border-t-4 animate-spin mx-auto mb-4"
-            style={{ borderColor: "rgba(212,175,55,0.2)", borderTopColor: "#D4AF37" }}
+            style={{ borderColor: "var(--sr-border)", borderTopColor: "var(--sr-wood-deep)" }}
           />
-          <p style={{ color: "rgba(212,175,55,0.6)" }}>Загрузка...</p>
+          <p style={{ color: "var(--sr-text-muted)" }}>Загрузка...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      className="min-h-screen pb-20"
-      style={{
-        background:
-          "radial-gradient(ellipse at 50% 0%, rgba(120,50,0,0.35) 0%, transparent 60%), linear-gradient(180deg, #0d0400 0%, #1a0800 50%, #0d0400 100%)",
-      }}
-    >
+    <div className="min-h-screen pb-20" style={{ background: "transparent" }}>
       {/* Header */}
-      <div className="sticky top-0 z-10 backdrop-blur-sm" style={{ borderBottom: "1px solid rgba(212,175,55,0.2)" }}>
+      <div className="sticky top-0 z-10 backdrop-blur-sm" style={{ borderBottom: "1px solid var(--sr-border)" }}>
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/")}
             className="p-2 rounded-lg transition-colors"
-            style={{ background: "rgba(212,175,55,0.1)" }}
+            style={{ background: "var(--sr-surface)" }}
           >
-            <ChevronLeft className="w-6 h-6" style={{ color: "#D4AF37" }} />
+            <ChevronLeft className="w-6 h-6" style={{ color: "var(--sr-wood-deep)" }} />
           </motion.button>
           <div className="flex items-center gap-2">
-            <Coins className="w-6 h-6" style={{ color: "#FFD700" }} />
+            <Coins className="w-6 h-6" style={{ color: "var(--sr-wood-deep)" }} />
             <h1
               className="text-2xl font-bold"
-              style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}
+              style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
             >
               Монеты
             </h1>
@@ -110,23 +104,23 @@ export default function WalletPage() {
             transition={{ delay: 0.1 }}
             className="p-6 rounded-2xl backdrop-blur-sm"
             style={{
-              background: "rgba(26, 8, 0, 0.8)",
-              border: "1px solid rgba(212,175,55,0.25)",
+              background: "var(--sr-surface)",
+              border: "1px solid var(--sr-border-strong)",
             }}
           >
-            <p className="text-sm font-semibold mb-3" style={{ color: "rgba(212,175,55,0.6)" }}>
+            <p className="text-sm font-semibold mb-3" style={{ color: "var(--sr-text-muted)" }}>
               Доступные монеты
             </p>
             <div className="flex items-baseline gap-2">
               <span
                 className="text-4xl font-bold"
-                style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}
+                style={{ color: "var(--sr-wood-deep)", fontFamily: "Inter, sans-serif" }}
               >
                 {wallet?.crypto_balance.toFixed(0) ?? "0"}
               </span>
-              <span style={{ color: "rgba(212,175,55,0.5)" }}>🪙</span>
+              <span style={{ color: "var(--sr-text-muted)" }}>🪙</span>
             </div>
-            <p className="text-xs mt-3" style={{ color: "rgba(212,175,55,0.4)" }}>
+            <p className="text-xs mt-3" style={{ color: "var(--sr-text-muted)" }}>
               Доступны для турниров
             </p>
           </motion.div>
@@ -138,23 +132,23 @@ export default function WalletPage() {
             transition={{ delay: 0.2 }}
             className="p-6 rounded-2xl backdrop-blur-sm"
             style={{
-              background: "rgba(26, 8, 0, 0.8)",
-              border: "1px solid rgba(212,175,55,0.25)",
+              background: "var(--sr-surface)",
+              border: "1px solid var(--sr-border-strong)",
             }}
           >
-            <p className="text-sm font-semibold mb-3" style={{ color: "rgba(212,175,55,0.6)" }}>
+            <p className="text-sm font-semibold mb-3" style={{ color: "var(--sr-text-muted)" }}>
               В активных играх
             </p>
             <div className="flex items-baseline gap-2">
               <span
                 className="text-4xl font-bold"
-                style={{ color: "#f59e0b", fontFamily: "Cinzel, serif" }}
+                style={{ color: "#BC8B33", fontFamily: "Inter, sans-serif" }}
               >
                 {wallet?.locked_balance.toFixed(0) ?? "0"}
               </span>
-              <span style={{ color: "rgba(245,158,11,0.5)" }}>🔒</span>
+              <span style={{ color: "var(--sr-warning)" }}>🔒</span>
             </div>
-            <p className="text-xs mt-3" style={{ color: "rgba(212,175,55,0.4)" }}>
+            <p className="text-xs mt-3" style={{ color: "var(--sr-text-muted)" }}>
               Заблокированы до конца партии
             </p>
           </motion.div>
@@ -167,17 +161,17 @@ export default function WalletPage() {
           transition={{ delay: 0.3 }}
           className="p-6 rounded-2xl backdrop-blur-sm text-center"
           style={{
-            background: "linear-gradient(135deg, rgba(212,175,55,0.15) 0%, rgba(255,215,0,0.1) 100%)",
-            border: "1px solid rgba(212,175,55,0.3)",
+            background: "linear-gradient(135deg, var(--sr-border) 0%, var(--sr-surface) 100%)",
+            border: "1px solid var(--sr-border-strong)",
           }}
         >
-          <p className="text-sm font-semibold mb-2" style={{ color: "rgba(212,175,55,0.6)" }}>
+          <p className="text-sm font-semibold mb-2" style={{ color: "var(--sr-text-muted)" }}>
             Всего монет
           </p>
-          <p className="text-5xl font-bold" style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}>
+          <p className="text-5xl font-bold" style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}>
             {((wallet?.crypto_balance ?? 0) + (wallet?.locked_balance ?? 0)).toFixed(0)}
           </p>
-          <p className="text-xs mt-3" style={{ color: "rgba(212,175,55,0.35)" }}>
+          <p className="text-xs mt-3" style={{ color: "var(--sr-text-muted)" }}>
             Все монеты виртуальные и не имеют реальной ценности
           </p>
         </motion.div>
@@ -186,7 +180,7 @@ export default function WalletPage() {
         <div>
           <h2
             className="text-xl font-bold mb-4"
-            style={{ color: "#D4AF37", fontFamily: "Cinzel, serif" }}
+            style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
           >
             История
           </h2>
@@ -195,11 +189,11 @@ export default function WalletPage() {
             <div
               className="p-8 rounded-2xl text-center backdrop-blur-sm"
               style={{
-                background: "rgba(26, 8, 0, 0.6)",
-                border: "1px solid rgba(212,175,55,0.2)",
+                background: "var(--sr-surface-2)",
+                border: "1px solid var(--sr-border)",
               }}
             >
-              <p style={{ color: "rgba(212,175,55,0.5)" }}>Нет операций</p>
+              <p style={{ color: "var(--sr-text-muted)" }}>Нет операций</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -211,22 +205,22 @@ export default function WalletPage() {
                   transition={{ delay: idx * 0.05 }}
                   className="p-4 rounded-lg backdrop-blur-sm flex items-center justify-between"
                   style={{
-                    background: "rgba(26, 8, 0, 0.6)",
-                    border: "1px solid rgba(212,175,55,0.15)",
+                    background: "var(--sr-surface-2)",
+                    border: "1px solid var(--sr-border)",
                   }}
                 >
                   <div className="flex items-center gap-4 flex-1">
                     <div
                       className="w-10 h-10 rounded-lg flex items-center justify-center"
-                      style={{ background: "rgba(212,175,55,0.1)" }}
+                      style={{ background: "var(--sr-surface)" }}
                     >
                       {TRANSACTION_ICONS[tx.type] || <Gift className="w-5 h-5" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold truncate" style={{ color: "#D4AF37" }}>
+                      <p className="font-semibold truncate" style={{ color: "var(--sr-wood-deep)" }}>
                         {TRANSACTION_LABELS[tx.type] || tx.type}
                       </p>
-                      <p className="text-xs truncate" style={{ color: "rgba(212,175,55,0.4)" }}>
+                      <p className="text-xs truncate" style={{ color: "var(--sr-text-muted)" }}>
                         {new Date(tx.created_at).toLocaleString("ru-RU")}
                       </p>
                     </div>
@@ -237,8 +231,8 @@ export default function WalletPage() {
                       style={{
                         color:
                           tx.type === "withdrawal" || tx.type === "fee_lock" || tx.type === "loss"
-                            ? "#ef4444"
-                            : "#4ade80",
+                            ? "#A74740"
+                            : "#56815D",
                       }}
                     >
                       {tx.type === "withdrawal" || tx.type === "fee_lock" || tx.type === "loss" ? "-" : "+"}

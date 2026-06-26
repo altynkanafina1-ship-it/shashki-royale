@@ -78,120 +78,134 @@ export default function Index() {
       data-testid="home-screen"
       className="min-h-[100dvh] flex flex-col items-center px-4 sm:px-5 safe-pt safe-pb safe-px relative"
       style={{
-        background: "radial-gradient(ellipse at center, #2C1810 0%, #0A0503 100%)",
-        paddingTop: "max(env(safe-area-inset-top, 0px), 10px)",
-        gap: "10px",
+        paddingTop: "max(env(safe-area-inset-top, 0px), 12px)",
+        gap: "12px",
       }}
     >
-      {/* Header: profile + wallet · sound + leaderboard + locale */}
-      <div className="w-full max-w-sm flex items-center justify-between gap-1.5">
-        <div className="flex items-center gap-1.5 min-w-0">
+      {/* Header: profile + wallet · sound + leaderboard */}
+      <div className="w-full max-w-sm flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <button
             onClick={() => navigate("/profile")}
-            className="flex items-center gap-1 px-2 py-1.5 rounded-xl cursor-pointer transition-all active:scale-95 shrink-0"
-            style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.18)" }}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl cursor-pointer transition-all active:scale-95 shrink-0 sr-icon-btn"
+            style={{
+              background: "var(--sr-surface)",
+              border: "1px solid var(--sr-border)",
+              boxShadow: "var(--sr-shadow-sm)",
+            }}
             data-testid="home-profile-btn"
             title={t("profile")}
           >
-            <User className="w-3.5 h-3.5" style={{ color: "#D4AF37" }} />
+            <User className="w-3.5 h-3.5" style={{ color: "var(--sr-wood-deep)" }} />
             <span
-              className="text-xs max-w-[64px] truncate"
-              style={{ color: "#D4AF37", fontFamily: "Cinzel, serif" }}
+              className="text-xs max-w-[80px] truncate font-medium"
+              style={{ color: "var(--sr-text)" }}
             >
               {profile ? profile.nickname.slice(0, 10) : t("profile")}
             </span>
           </button>
           <WalletDisplay />
         </div>
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={toggleSound}
             className="p-1.5 rounded-xl cursor-pointer active:scale-95"
-            style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.18)" }}
+            style={{
+              background: "var(--sr-surface)",
+              border: "1px solid var(--sr-border)",
+              boxShadow: "var(--sr-shadow-sm)",
+            }}
             title={soundOn ? "Sound on" : "Sound off"}
             aria-label={soundOn ? "Sound on" : "Sound off"}
             data-testid="home-sound-btn"
           >
             {soundOn ? (
-              <Volume2 className="w-4 h-4" style={{ color: "#D4AF37" }} />
+              <Volume2 className="w-4 h-4" style={{ color: "var(--sr-wood-deep)" }} />
             ) : (
-              <VolumeX className="w-4 h-4" style={{ color: "rgba(212,175,55,0.45)" }} />
+              <VolumeX className="w-4 h-4" style={{ color: "var(--sr-text-subtle)" }} />
             )}
           </button>
           <button
             onClick={() => navigate("/leaderboard")}
             className="p-1.5 rounded-xl cursor-pointer active:scale-95"
-            style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.18)" }}
+            style={{
+              background: "var(--sr-surface)",
+              border: "1px solid var(--sr-border)",
+              boxShadow: "var(--sr-shadow-sm)",
+            }}
             title={t("leaderboard")}
             data-testid="home-leaderboard-btn"
           >
-            <Trophy className="w-4 h-4" style={{ color: "#D4AF37" }} />
+            <Trophy className="w-4 h-4" style={{ color: "var(--sr-wood-deep)" }} />
           </button>
         </div>
       </div>
 
       {/* Logo */}
       <motion.div
-        initial={{ opacity: 0, y: -16 }}
+        initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="flex flex-col items-center mt-1"
+        className="flex flex-col items-center mt-2"
       >
         <motion.div
-          initial={{ scale: 0.5, opacity: 0 }}
+          initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.15, duration: 0.5 }}
-          style={{ filter: "drop-shadow(0 0 16px rgba(212,175,55,0.6))" }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+          style={{ filter: "drop-shadow(0 4px 10px rgba(167,126,46,0.28))" }}
         >
-          <svg viewBox="0 0 80 52" width="56" height="36" className="sm:w-[72px] sm:h-[46px]">
+          <svg viewBox="0 0 80 52" width="64" height="42" className="sm:w-[80px] sm:h-[50px]">
             <defs>
               <linearGradient id="crownGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#FFD700" />
-                <stop offset="50%" stopColor="#D4AF37" />
-                <stop offset="100%" stopColor="#B8860B" />
+                <stop offset="0%" stopColor="#E0BD6A" />
+                <stop offset="50%" stopColor="#C39A48" />
+                <stop offset="100%" stopColor="#A77E2E" />
               </linearGradient>
             </defs>
-            <path d="M8 44 L14 16 L26 32 L40 4 L54 32 L66 16 L72 44 Z" fill="url(#crownGrad)" stroke="#FFE066" strokeWidth="1" />
-            <rect x="8" y="40" width="64" height="10" rx="3" fill="url(#crownGrad)" stroke="#FFE066" strokeWidth="0.8" />
-            <circle cx="40" cy="6" r="4" fill="#DC143C" stroke="#FFD700" strokeWidth="0.8" />
-            <circle cx="14" cy="17" r="3" fill="#DC143C" stroke="#FFD700" strokeWidth="0.8" />
-            <circle cx="66" cy="17" r="3" fill="#DC143C" stroke="#FFD700" strokeWidth="0.8" />
-            <circle cx="28" cy="45" r="2" fill="#FFD700" />
-            <circle cx="52" cy="45" r="2" fill="#FFD700" />
-            <circle cx="40" cy="45" r="2.5" fill="#DC143C" />
+            <path
+              d="M8 44 L14 16 L26 32 L40 4 L54 32 L66 16 L72 44 Z"
+              fill="url(#crownGrad)"
+              stroke="#E8CC85"
+              strokeWidth="0.8"
+            />
+            <rect x="8" y="40" width="64" height="10" rx="3" fill="url(#crownGrad)" stroke="#E8CC85" strokeWidth="0.7" />
+            <circle cx="40" cy="6" r="4" fill="#A74740" stroke="#E0BD6A" strokeWidth="0.7" />
+            <circle cx="14" cy="17" r="3" fill="#A74740" stroke="#E0BD6A" strokeWidth="0.7" />
+            <circle cx="66" cy="17" r="3" fill="#A74740" stroke="#E0BD6A" strokeWidth="0.7" />
+            <circle cx="28" cy="45" r="2" fill="#E0BD6A" />
+            <circle cx="52" cy="45" r="2" fill="#E0BD6A" />
+            <circle cx="40" cy="45" r="2.5" fill="#A74740" />
           </svg>
         </motion.div>
 
-        <div className="text-center mt-1">
+        <div className="text-center mt-2">
           <h1
-            className="text-3xl sm:text-4xl font-black tracking-widest uppercase leading-none"
+            className="text-3xl sm:text-4xl font-black tracking-[0.18em] leading-none"
             style={{
               fontFamily: "Cinzel, serif",
-              background: "linear-gradient(180deg, #FFD700 0%, #B8860B 60%, #FFD700 100%)",
+              background: "linear-gradient(180deg, #C39A48 0%, #815B43 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-              filter: "drop-shadow(0 2px 6px rgba(180,130,0,0.5))",
             }}
           >
             ШАШКИ
           </h1>
           <h1
-            className="text-3xl sm:text-4xl font-black tracking-widest uppercase leading-none -mt-0.5"
+            className="text-3xl sm:text-4xl font-black tracking-[0.18em] leading-none mt-0.5"
             style={{
               fontFamily: "Cinzel, serif",
-              background: "linear-gradient(180deg, #FFD700 0%, #B8860B 60%, #FFD700 100%)",
+              background: "linear-gradient(180deg, #C39A48 0%, #815B43 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-              filter: "drop-shadow(0 2px 6px rgba(180,130,0,0.5))",
             }}
           >
             РОЯЛЬ
           </h1>
           <p
-            className="text-[10px] tracking-[0.3em] uppercase mt-0.5"
-            style={{ color: "rgba(212,175,55,0.6)", fontFamily: "Montserrat, sans-serif" }}
+            className="text-[11px] tracking-[0.32em] mt-1.5 font-medium"
+            style={{ color: "var(--sr-text-muted)", fontFamily: "Inter, sans-serif" }}
           >
-            {t("subtitle", { defaultValue: "Русские шашки" })}
+            {t("subtitle", { defaultValue: "РУССКИЕ ШАШКИ" })}
           </p>
         </div>
       </motion.div>
@@ -206,25 +220,28 @@ export default function Index() {
             className="w-full max-w-sm overflow-hidden"
           >
             <div
-              className="rounded-2xl p-3"
+              className="rounded-2xl p-3.5"
               style={{
-                background: "rgba(212,175,55,0.06)",
-                border: "1px solid rgba(212,175,55,0.25)",
+                background: "linear-gradient(135deg, #FAF3E6 0%, #F4EAD7 100%)",
+                border: "1px solid var(--sr-border-strong)",
+                boxShadow: "var(--sr-shadow-card)",
               }}
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-2.5">
                 <div>
                   <p
-                    className="text-[10px] uppercase tracking-wider"
-                    style={{ color: "rgba(212,175,55,0.6)", fontFamily: "Cinzel, serif" }}
+                    className="text-[10px] uppercase tracking-[0.22em] font-semibold"
+                    style={{ color: "var(--sr-text-muted)" }}
                   >
                     Активная партия
                   </p>
                   {activeGame.roomCode && (
-                    <p className="text-xs mt-0.5" style={{ color: "rgba(212,175,55,0.4)" }}>
-                      <span style={{ color: "#FFD700", letterSpacing: "0.15em" }}>{activeGame.roomCode}</span>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--sr-text-muted)" }}>
+                      <span style={{ color: "var(--sr-wood-deep)", letterSpacing: "0.15em", fontWeight: 700 }}>
+                        {activeGame.roomCode}
+                      </span>
                       {" · "}
-                      <span style={{ color: activeGame.playerColor === "white" ? "#FFD700" : "#aaa" }}>
+                      <span style={{ color: "var(--sr-text)" }}>
                         {activeGame.playerColor === "white" ? "белые" : "чёрные"}
                       </span>
                     </p>
@@ -235,31 +252,35 @@ export default function Index() {
                     clearActiveGame();
                     setActiveGame(null);
                   }}
-                  className="p-1.5 cursor-pointer rounded-lg"
-                  style={{ background: "rgba(255,255,255,0.06)" }}
+                  className="p-1.5 cursor-pointer rounded-lg active:scale-95"
+                  style={{
+                    background: "var(--sr-surface)",
+                    border: "1px solid var(--sr-border)",
+                  }}
                   title="Сбросить партию"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" style={{ color: "rgba(212,175,55,0.5)" }} />
+                  <RotateCcw className="w-3.5 h-3.5" style={{ color: "var(--sr-text-muted)" }} />
                 </button>
               </div>
               <button
                 onClick={() => void handleResume()}
                 disabled={resumeLoading}
-                className="w-full py-2.5 text-sm font-semibold cursor-pointer transition-all"
+                className="w-full py-2.5 text-sm font-semibold cursor-pointer transition-all active:scale-[0.98]"
                 style={{
                   borderRadius: "12px",
-                  fontFamily: "Cinzel, serif",
-                  border: "1px solid #D4AF37",
+                  fontFamily: "Inter, sans-serif",
+                  border: "1px solid rgba(167,126,46,0.55)",
                   background: resumeLoading
-                    ? "rgba(180,130,0,0.2)"
-                    : "linear-gradient(135deg, #b8860b, #ffd700)",
-                  color: resumeLoading ? "rgba(255,200,50,0.5)" : "#1a0800",
+                    ? "linear-gradient(135deg, #E5D5B0, #D9C8A2)"
+                    : "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)",
+                  color: resumeLoading ? "rgba(43,27,10,0.55)" : "#2B1B0A",
+                  boxShadow: resumeLoading ? "none" : "0 4px 14px rgba(167,126,46,0.22)",
                 }}
               >
                 {resumeLoading ? "Подключение..." : "Продолжить партию"}
               </button>
               {resumeError && (
-                <p className="text-xs text-center mt-1.5" style={{ color: "#ff9999" }}>
+                <p className="text-xs text-center mt-1.5" style={{ color: "var(--sr-danger)" }}>
                   {resumeError}
                 </p>
               )}
@@ -272,7 +293,7 @@ export default function Index() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.4 }}
+        transition={{ delay: 0.15, duration: 0.4 }}
         className="w-full max-w-sm"
       >
         <PrimaryButton onClick={() => navigate("/lobby")} variant="red">
@@ -280,7 +301,7 @@ export default function Index() {
         </PrimaryButton>
       </motion.div>
 
-      {/* Engagement strip — streak/daily/challenge (cosmetic only, 0 Coin cost) */}
+      {/* Engagement strip — streak/daily/challenge */}
       <EngagementStrip />
 
       {/* Quick Match (Coin) */}
@@ -291,31 +312,33 @@ export default function Index() {
         <motion.button
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.4 }}
+          transition={{ delay: 0.25, duration: 0.4 }}
           onClick={() => navigate("/stake-lobby")}
-          className="w-full max-w-sm flex items-center justify-center gap-2 py-2.5 rounded-xl cursor-pointer transition-all active:scale-95"
+          className="w-full max-w-sm flex items-center justify-center gap-2 py-2.5 rounded-xl cursor-pointer transition-all active:scale-[0.98]"
           style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(212,175,55,0.22)",
-            color: "rgba(220,180,80,0.95)",
-            fontFamily: "Cinzel, serif",
+            background: "var(--sr-surface)",
+            border: "1px solid var(--sr-border)",
+            color: "var(--sr-wood-deep)",
+            fontFamily: "Inter, sans-serif",
+            fontWeight: 600,
+            boxShadow: "var(--sr-shadow-sm)",
           }}
           data-testid="all-tables-btn"
         >
           <ListChecks className="w-4 h-4" />
-          <span className="text-sm font-semibold">
+          <span className="text-sm">
             {t("allTablesCustom", { defaultValue: "Все столы / своя ставка" })}
           </span>
         </motion.button>
       )}
 
-      {/* Secondary CTAs — natural flow, no flex push */}
+      {/* Secondary CTAs */}
       <motion.div
         data-testid="home-secondary"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35, duration: 0.4 }}
-        className="w-full max-w-sm flex flex-col gap-2"
+        transition={{ delay: 0.3, duration: 0.4 }}
+        className="w-full max-w-sm flex flex-col gap-2.5"
       >
         <PrimaryButton onClick={() => navigate("/local")} variant="ghost">
           {t("playLocal")}
@@ -326,8 +349,8 @@ export default function Index() {
       </motion.div>
 
       {/* Footer */}
-      <div className="flex flex-col items-center pt-1 pb-1">
-        <p className="text-[9px]" style={{ color: "rgba(212,175,55,0.25)" }}>
+      <div className="flex flex-col items-center pt-2 pb-1">
+        <p className="text-[10px] font-medium" style={{ color: "var(--sr-text-subtle)" }}>
           © Шашки Рояль 2026 · Coin — внутренняя игровая валюта
         </p>
       </div>
