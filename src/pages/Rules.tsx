@@ -58,74 +58,80 @@ export default function Rules() {
   return (
     <div
       className="h-[100dvh] flex flex-col overflow-hidden"
-      style={{
-        background: "radial-gradient(ellipse at center, #2C1810 0%, #0A0503 100%)",
-      }}
+      style={{ background: "transparent" }}
     >
-      {/* Header */}
       <div
         className="flex items-center gap-3 px-4 pt-4 pb-3 flex-shrink-0"
-        style={{ borderBottom: "1px solid rgba(212,175,55,0.15)" }}
+        style={{
+          borderBottom: "1px solid var(--sr-border-soft)",
+          background: "rgba(255,253,248,0.65)",
+          backdropFilter: "blur(8px)",
+        }}
       >
         <button
           onClick={() => navigate("/")}
-          className="p-2 cursor-pointer rounded-xl"
-          style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.15)" }}
+          className="p-2 cursor-pointer rounded-xl active:scale-95"
+          style={{
+            background: "var(--sr-surface)",
+            border: "1px solid var(--sr-border)",
+            boxShadow: "var(--sr-shadow-sm)",
+          }}
+          aria-label="Назад"
         >
-          <ChevronLeft className="w-5 h-5" style={{ color: "#D4AF37" }} />
+          <ChevronLeft className="w-5 h-5" style={{ color: "var(--sr-wood-deep)" }} />
         </button>
         <div>
           <h1
             className="text-xl font-bold"
             style={{
               fontFamily: "Cinzel, serif",
-              background: "linear-gradient(135deg, #FFD700, #B8860B)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
+              color: "var(--sr-wood-deep)",
             }}
           >
             Правила игры
           </h1>
-          <p className="text-xs" style={{ color: "rgba(212,175,55,0.45)" }}>
+          <p className="text-xs" style={{ color: "var(--sr-text-muted)" }}>
             Русские шашки — классические правила
           </p>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 pb-6">
+      <div
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-3"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 24px)" }}
+      >
         {RULES.map((rule, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.04, duration: 0.35 }}
             className="rounded-2xl p-4"
             style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(212,175,55,0.12)",
+              background: "var(--sr-surface)",
+              border: "1px solid var(--sr-border)",
+              boxShadow: "var(--sr-shadow-sm)",
             }}
           >
             <div className="flex items-start gap-3">
-              {/* Icon badge */}
               <div
-                className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
+                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
                 style={{
-                  background: "linear-gradient(135deg, #3E2723, #5D3A1A)",
-                  border: "1px solid rgba(212,175,55,0.3)",
-                  color: "#D4AF37",
+                  background: "linear-gradient(135deg, #FAF3E6 0%, #F0E1C4 100%)",
+                  border: "1px solid var(--sr-border-strong)",
+                  color: "var(--sr-wood-deep)",
                 }}
               >
                 {rule.icon}
               </div>
-              <div>
+              <div className="min-w-0">
                 <h3
-                  className="font-semibold text-sm mb-1.5"
-                  style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}
+                  className="font-bold text-sm mb-1.5"
+                  style={{ color: "var(--sr-text)", fontFamily: "Inter, sans-serif" }}
                 >
                   {rule.title}
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: "rgba(220,190,140,0.85)" }}>
+                <p className="text-sm leading-relaxed" style={{ color: "var(--sr-text-muted)" }}>
                   {rule.text}
                 </p>
               </div>
@@ -133,25 +139,25 @@ export default function Rules() {
           </motion.div>
         ))}
 
-        {/* Tips section */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
           className="rounded-2xl p-4 mt-2"
           style={{
-            background: "rgba(212,175,55,0.05)",
-            border: "1px solid rgba(212,175,55,0.2)",
+            background: "linear-gradient(135deg, #FFFDF8 0%, #FAF3E6 100%)",
+            border: "1px solid var(--sr-border-strong)",
+            boxShadow: "var(--sr-shadow-sm)",
           }}
         >
           <p
-            className="text-xs font-bold uppercase tracking-widest mb-3"
-            style={{ color: "rgba(212,175,55,0.6)", fontFamily: "Cinzel, serif" }}
+            className="text-xs font-bold uppercase tracking-[0.2em] mb-3"
+            style={{ color: "var(--sr-wood-deep)", fontFamily: "Inter, sans-serif" }}
           >
             Советы
           </p>
           {TIPS.map((tip, i) => (
-            <p key={i} className="text-sm py-1" style={{ color: "rgba(220,190,140,0.8)" }}>
+            <p key={i} className="text-sm py-1" style={{ color: "var(--sr-text)" }}>
               {tip}
             </p>
           ))}

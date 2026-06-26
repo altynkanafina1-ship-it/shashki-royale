@@ -13,8 +13,7 @@ import { getTierInfo, getTierProgress, getWinRate } from "../lib/rating.ts";
 const AVATARS = ["♟", "♛", "⚔️", "🛡️", "🦁", "🐺", "🔥", "🌙"];
 
 const ROYAL_BG = {
-  background:
-    "radial-gradient(ellipse at 50% 0%, rgba(120,50,0,0.35) 0%, transparent 60%), linear-gradient(180deg, #0d0400 0%, #1a0800 50%, #0d0400 100%)",
+  background: "transparent",
 };
 
 export default function ProfilePage() {
@@ -63,13 +62,13 @@ export default function ProfilePage() {
         <button
           onClick={() => navigate("/")}
           className="p-2 rounded-xl cursor-pointer transition-all"
-          style={{ background: "rgba(255,255,255,0.05)" }}
+          style={{ background: "var(--sr-surface)" }}
         >
-          <ChevronLeft className="w-5 h-5" style={{ color: "rgba(200,150,50,0.8)" }} />
+          <ChevronLeft className="w-5 h-5" style={{ color: "var(--sr-text)" }} />
         </button>
         <h1
           className="text-base font-bold tracking-widest uppercase"
-          style={{ fontFamily: "Cinzel, serif", color: "#ffd700" }}
+          style={{ fontFamily: "Cinzel, serif", color: "var(--sr-wood-deep)" }}
         >
           {t("profile")}
         </h1>
@@ -77,7 +76,7 @@ export default function ProfilePage() {
         <button
           onClick={() => navigate("/leaderboard")}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer text-xs font-semibold transition-all"
-          style={{ background: "rgba(255,215,0,0.08)", border: "1px solid rgba(255,215,0,0.2)", color: "rgba(200,150,50,0.8)", fontFamily: "Cinzel, serif" }}
+          style={{ background: "var(--sr-surface)", border: "1px solid var(--sr-border)", color: "var(--sr-text)", fontFamily: "Inter, sans-serif" }}
         >
           <Trophy className="w-3.5 h-3.5" />
           {t("leaderboard")}
@@ -90,7 +89,7 @@ export default function ProfilePage() {
         ) : isLoading ? (
           <LoadingSkeleton />
         ) : !profile ? (
-          <p className="text-center text-sm" style={{ color: "rgba(200,150,50,0.5)" }}>
+          <p className="text-center text-sm" style={{ color: "var(--sr-text-muted)" }}>
             {t("error")}
           </p>
         ) : (
@@ -100,7 +99,7 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               className="rounded-2xl p-5"
-              style={{ background: "rgba(255,215,0,0.04)", border: "1px solid rgba(255,215,0,0.12)" }}
+              style={{ background: "var(--sr-surface-2)", border: "1px solid var(--sr-border)" }}
             >
               {editing ? (
                 <EditForm
@@ -127,18 +126,18 @@ export default function ProfilePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
               className="rounded-2xl p-5"
-              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
+              style={{ background: "var(--sr-surface-2)", border: "1px solid var(--sr-border-soft)" }}
             >
               <div className="flex items-center gap-2 mb-4">
-                <Gamepad2 className="w-4 h-4" style={{ color: "rgba(200,150,50,0.5)" }} />
-                <p className="text-xs uppercase tracking-widest" style={{ color: "rgba(200,150,50,0.5)", fontFamily: "Cinzel, serif" }}>
+                <Gamepad2 className="w-4 h-4" style={{ color: "var(--sr-text-muted)" }} />
+                <p className="text-xs uppercase tracking-widest" style={{ color: "var(--sr-text-muted)", fontFamily: "Inter, sans-serif" }}>
                   {t("totalGames")}: {profile.total_games}
                 </p>
               </div>
               <div className="grid grid-cols-3 gap-3 mb-4">
-                <StatBox label={t("wins")} value={profile.wins} color="#4ade80" />
-                <StatBox label={t("losses")} value={profile.losses} color="#f87171" />
-                <StatBox label={t("draws")} value={profile.draws} color="#fbbf24" />
+                <StatBox label={t("wins")} value={profile.wins} color="#56815D" />
+                <StatBox label={t("losses")} value={profile.losses} color="#A74740" />
+                <StatBox label={t("draws")} value={profile.draws} color="#BC8B33" />
               </div>
 
               {/* Win Rate Bar */}
@@ -177,8 +176,8 @@ function RatingTierCard({ rating }: { rating: number }) {
       }}
     >
       <div className="flex items-center gap-3 mb-4">
-        <TrendingUp className="w-4 h-4" style={{ color: "rgba(200,150,50,0.5)" }} />
-        <p className="text-xs uppercase tracking-widest" style={{ color: "rgba(200,150,50,0.5)", fontFamily: "Cinzel, serif" }}>
+        <TrendingUp className="w-4 h-4" style={{ color: "var(--sr-text-muted)" }} />
+        <p className="text-xs uppercase tracking-widest" style={{ color: "var(--sr-text-muted)", fontFamily: "Inter, sans-serif" }}>
           Ранг
         </p>
       </div>
@@ -191,10 +190,10 @@ function RatingTierCard({ rating }: { rating: number }) {
           {tierInfo.icon}
         </div>
         <div className="flex-1">
-          <p className="text-2xl font-bold" style={{ color: tierInfo.color, fontFamily: "Cinzel, serif" }}>
+          <p className="text-2xl font-bold" style={{ color: tierInfo.color, fontFamily: "Inter, sans-serif" }}>
             {tierInfo.label}
           </p>
-          <p className="text-sm mt-0.5" style={{ color: "rgba(200,150,50,0.5)" }}>
+          <p className="text-sm mt-0.5" style={{ color: "var(--sr-text-muted)" }}>
             {rating} очков
           </p>
         </div>
@@ -202,11 +201,11 @@ function RatingTierCard({ rating }: { rating: number }) {
 
       {/* Progress bar */}
       <div className="space-y-1.5">
-        <div className="flex justify-between text-xs" style={{ color: "rgba(200,150,50,0.4)" }}>
+        <div className="flex justify-between text-xs" style={{ color: "var(--sr-text-muted)" }}>
           <span>{tierInfo.minRating}</span>
           <span>{isMaxTier ? "MAX" : `${nextTierIndex < tiers.length ? (tierInfo.maxRating ?? 0) + 1 : "∞"}`}</span>
         </div>
-        <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+        <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--sr-surface)" }}>
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
@@ -216,7 +215,7 @@ function RatingTierCard({ rating }: { rating: number }) {
           />
         </div>
         {!isMaxTier && (
-          <p className="text-xs" style={{ color: "rgba(200,150,50,0.35)" }}>
+          <p className="text-xs" style={{ color: "var(--sr-text-muted)" }}>
             До следующего ранга: {(tierInfo.maxRating ?? 0) + 1 - rating} очков
           </p>
         )}
@@ -238,7 +237,7 @@ function WinRateBar({
 
   return (
     <div>
-      <div className="flex justify-between text-xs mb-1.5" style={{ color: "rgba(200,150,50,0.4)" }}>
+      <div className="flex justify-between text-xs mb-1.5" style={{ color: "var(--sr-text-muted)" }}>
         <span>{t("wins")}: {winPct}%</span>
         <span>{t("draws")}: {drawPct}%</span>
         <span>{t("losses")}: {lossPct}%</span>
@@ -249,7 +248,7 @@ function WinRateBar({
             initial={{ width: 0 }}
             animate={{ width: `${winPct}%` }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            style={{ background: "#4ade80" }}
+            style={{ background: "#56815D" }}
           />
         )}
         {drawPct > 0 && (
@@ -257,7 +256,7 @@ function WinRateBar({
             initial={{ width: 0 }}
             animate={{ width: `${drawPct}%` }}
             transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-            style={{ background: "#fbbf24" }}
+            style={{ background: "#BC8B33" }}
           />
         )}
         {lossPct > 0 && (
@@ -265,7 +264,7 @@ function WinRateBar({
             initial={{ width: 0 }}
             animate={{ width: `${lossPct}%` }}
             transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-            style={{ background: "#f87171" }}
+            style={{ background: "#A74740" }}
           />
         )}
       </div>
@@ -306,7 +305,7 @@ function ProfileDisplay({
         </div>
       </div>
       <div className="flex-1 min-w-0">
-        <h2 className="text-xl font-bold truncate" style={{ color: "#ffd700", fontFamily: "Cinzel, serif" }}>
+        <h2 className="text-xl font-bold truncate" style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}>
           {profile.nickname}
         </h2>
         <p className="text-sm mt-0.5" style={{ color: tierInfo.color }}>
@@ -314,11 +313,11 @@ function ProfileDisplay({
         </p>
         {wallet && (
           <div className="mt-2 flex flex-wrap gap-2">
-            <span className="text-xs px-2 py-1 rounded-lg" style={{ background: "rgba(74,222,128,0.08)", color: "#4ade80" }}>
+            <span className="text-xs px-2 py-1 rounded-lg" style={{ background: "rgba(74,222,128,0.08)", color: "#56815D" }}>
               🪙 {wallet.crypto_balance} {t("tokensShort")}
             </span>
             {wallet.locked_balance > 0 && (
-              <span className="text-xs px-2 py-1 rounded-lg" style={{ background: "rgba(251,191,36,0.08)", color: "#fbbf24" }}>
+              <span className="text-xs px-2 py-1 rounded-lg" style={{ background: "rgba(251,191,36,0.08)", color: "#BC8B33" }}>
                 🔒 {wallet.locked_balance}
               </span>
             )}
@@ -328,9 +327,9 @@ function ProfileDisplay({
       <button
         onClick={onEdit}
         className="p-2 rounded-xl cursor-pointer"
-        style={{ background: "rgba(255,215,0,0.08)", border: "1px solid rgba(255,215,0,0.15)" }}
+        style={{ background: "var(--sr-surface)", border: "1px solid var(--sr-border)" }}
       >
-        <Edit2 className="w-4 h-4" style={{ color: "#ffd700" }} />
+        <Edit2 className="w-4 h-4" style={{ color: "var(--sr-wood-deep)" }} />
       </button>
     </div>
   );
@@ -351,7 +350,7 @@ function EditForm({
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-xs uppercase tracking-widest block mb-1" style={{ color: "rgba(200,150,50,0.5)", fontFamily: "Cinzel, serif" }}>
+        <label className="text-xs uppercase tracking-widest block mb-1" style={{ color: "var(--sr-text-muted)", fontFamily: "Inter, sans-serif" }}>
           {t("nickname")}
         </label>
         <input
@@ -360,16 +359,16 @@ function EditForm({
           maxLength={20}
           className="w-full px-4 py-2.5 rounded-xl text-sm outline-none"
           style={{
-            background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,215,0,0.2)",
-            color: "#ffd700",
-            fontFamily: "Cinzel, serif",
+            background: "var(--sr-surface)",
+            border: "1px solid var(--sr-border)",
+            color: "var(--sr-wood-deep)",
+            fontFamily: "Inter, sans-serif",
           }}
           placeholder="Player"
         />
       </div>
       <div>
-        <label className="text-xs uppercase tracking-widest block mb-2" style={{ color: "rgba(200,150,50,0.5)", fontFamily: "Cinzel, serif" }}>
+        <label className="text-xs uppercase tracking-widest block mb-2" style={{ color: "var(--sr-text-muted)", fontFamily: "Inter, sans-serif" }}>
           {t("avatar")}
         </label>
         <div className="grid grid-cols-8 gap-1.5">
@@ -379,8 +378,8 @@ function EditForm({
               onClick={() => setAvatarIndex(i)}
               className="h-9 rounded-lg text-lg cursor-pointer transition-all"
               style={{
-                background: avatarIndex === i ? "rgba(255,215,0,0.18)" : "rgba(255,255,255,0.04)",
-                border: avatarIndex === i ? "1px solid rgba(255,215,0,0.5)" : "1px solid rgba(255,255,255,0.08)",
+                background: avatarIndex === i ? "var(--sr-border)" : "var(--sr-surface-2)",
+                border: avatarIndex === i ? "1px solid var(--sr-wood-deep)" : "1px solid var(--sr-border)",
               }}
             >
               {av}
@@ -393,7 +392,7 @@ function EditForm({
           onClick={onSave}
           disabled={saving}
           className="flex-1 py-2.5 rounded-xl text-sm font-semibold cursor-pointer transition-all flex items-center justify-center gap-2"
-          style={{ background: "linear-gradient(135deg, #b8860b, #ffd700)", color: "#1a0800", fontFamily: "Cinzel, serif" }}
+          style={{ background: "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)", color: "var(--sr-surface)", fontFamily: "Inter, sans-serif" }}
         >
           <Check className="w-4 h-4" />
           {saving ? "..." : t("save")}
@@ -401,7 +400,7 @@ function EditForm({
         <button
           onClick={onCancel}
           className="px-4 py-2.5 rounded-xl text-sm cursor-pointer"
-          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(200,150,50,0.6)" }}
+          style={{ background: "var(--sr-surface)", border: "1px solid rgba(255,255,255,0.1)", color: "var(--sr-text-muted)" }}
         >
           <X className="w-4 h-4" />
         </button>
@@ -414,10 +413,10 @@ function StatBox({ label, value, color }: { label: string; value: number; color:
   return (
     <div
       className="rounded-xl p-3 text-center"
-      style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+      style={{ background: "var(--sr-surface-2)", border: "1px solid var(--sr-surface)" }}
     >
       <p className="text-2xl font-bold" style={{ color }}>{value}</p>
-      <p className="text-xs mt-0.5" style={{ color: "rgba(200,150,50,0.4)" }}>{label}</p>
+      <p className="text-xs mt-0.5" style={{ color: "var(--sr-text-muted)" }}>{label}</p>
     </div>
   );
 }
@@ -426,7 +425,7 @@ function NotConfigured() {
   return (
     <div className="text-center py-12">
       <p className="text-4xl mb-4">⚙️</p>
-      <p className="text-sm" style={{ color: "rgba(200,150,50,0.6)" }}>
+      <p className="text-sm" style={{ color: "var(--sr-text-muted)" }}>
         Добавьте VITE_SUPABASE_URL и VITE_SUPABASE_ANON_KEY в Secrets
       </p>
     </div>
@@ -437,7 +436,7 @@ function LoadingSkeleton() {
   return (
     <div className="space-y-3 animate-pulse">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="h-24 rounded-2xl" style={{ background: "rgba(255,255,255,0.04)" }} />
+        <div key={i} className="h-24 rounded-2xl" style={{ background: "var(--sr-surface-2)" }} />
       ))}
     </div>
   );

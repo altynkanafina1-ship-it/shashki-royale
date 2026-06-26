@@ -44,16 +44,16 @@ type BoardProps = {
 };
 
 const ANIM_DURATION_MS = 350;
-// Board colors — classic light wooden palette (Lichess-style)
-// Per client request: "светлее, как в обычных шашках"
-const DARK_SQ = "#B58863";   // warm light-brown
-const LIGHT_SQ = "#F0D9B5";  // creamy beige
 
-// Green highlight colors (from video reference)
-const SELECTED_BG = "#2E7D32";
-const SELECTED_GLOW = "rgba(76, 175, 80, 0.45)";
-const MOVE_DOT_COLOR = "rgba(76, 175, 80, 0.85)";
-const MOVE_DOT_BORDER = "rgba(56, 142, 60, 0.9)";
+/* ─── Light "wood + ivory" board palette (premium classic feel) ─── */
+const DARK_SQ = "#B98863";    // warm wood mid (dark squares)
+const LIGHT_SQ = "#F0E1C4";   // creamy ivory (light squares)
+
+/* Move-hint colors — soft sage green, friendly but unmistakable */
+const SELECTED_BG = "rgba(86, 129, 93, 0.32)";
+const SELECTED_GLOW = "rgba(86, 129, 93, 0.45)";
+const MOVE_DOT_COLOR = "rgba(86, 129, 93, 0.85)";
+const MOVE_DOT_BORDER = "rgba(64, 105, 72, 0.95)";
 
 export default function BoardView({
   board,
@@ -85,7 +85,7 @@ export default function BoardView({
     ) {
       const prev = prevBoardRef.current;
       const movingPiece = prev[lastMove.fromRow]?.[lastMove.fromCol];
-      
+
       // Update refs immediately so next render has correct state
       prevLastMoveRef.current = lastMove;
       prevBoardRef.current = board;
@@ -134,7 +134,7 @@ export default function BoardView({
     };
   }, []);
 
-  // Handle invalid tap — show yellow flash
+  // Handle invalid tap — show soft amber flash
   const handleInvalidTap = useCallback((row: number, col: number) => {
     const tapId = `tap-${row}-${col}-${Date.now()}`;
     setInvalidTaps((prev) => [...prev, { id: tapId, row, col }]);
@@ -167,12 +167,11 @@ export default function BoardView({
     ? [...Array(8)].map((_, i) => 7 - i)
     : [...Array(8)].map((_, i) => i);
 
-  // Track whether animation has started (need 2-frame approach: render at origin, then animate)
+  // Track whether animation has started
   const [animStarted, setAnimStarted] = useState(false);
 
   useEffect(() => {
     if (animating && !animStarted) {
-      // Use rAF to ensure the piece renders at origin first, then slides
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           setAnimStarted(true);
@@ -219,11 +218,14 @@ export default function BoardView({
         width: "100%",
         maxWidth: "min(100vw, calc(100vh - 180px))",
         margin: "0 auto",
-        border: "8px solid #5D4037",
-        outline: "3px solid #8D6E63",
-        borderRadius: "6px",
-        boxShadow: "0 12px 40px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.2)",
-        background: "#4E342E",
+        /* Soft wooden frame — light, layered, premium */
+        border: "6px solid #A9794E",
+        outline: "2px solid #D7B48A",
+        outlineOffset: "0px",
+        borderRadius: "10px",
+        boxShadow:
+          "0 18px 40px rgba(80,55,30,0.18), 0 4px 10px rgba(80,55,30,0.08), inset 0 0 0 1px rgba(255,255,255,0.4)",
+        background: "#C99D6E",
       }}
     >
       {rows.flatMap((row) =>
@@ -247,9 +249,8 @@ export default function BoardView({
           const isMoveDot = isDark && isLegalTarget && !piece;
           const isCaptureTarget = isDark && isLegalTarget && !!piece && piece.color !== currentTurn;
 
-          // Cell background
-          let cellBg = isDark ? DARK_SQ : LIGHT_SQ;
-          if (isSelected && isDark) cellBg = SELECTED_BG;
+          // Cell background — light premium palette
+          const cellBg = isDark ? DARK_SQ : LIGHT_SQ;
 
           return (
             <div
@@ -262,35 +263,38 @@ export default function BoardView({
                 cursor: (isDark && isLegalTarget) || (piece && canInteract && isLegalFrom) ? "pointer" : "default",
               }}
             >
-              {/* Selected square GREEN glow (matching video) */}
+              {/* Selected-square sage-green highlight (light theme) */}
               {isSelected && isDark && (
                 <div
-                  className="absolute inset-0 pointer-events-none z-5"
+                  className="absolute inset-0 pointer-events-none"
                   style={{
-                    background: SELECTED_GLOW,
-                    boxShadow: "inset 0 0 14px rgba(76, 175, 80, 0.7)",
+                    background: SELECTED_BG,
+                    boxShadow: `inset 0 0 12px ${SELECTED_GLOW}`,
+                    zIndex: 5,
                   }}
                 />
               )}
 
-              {/* Yellow invalid tap flash */}
+              {/* Soft amber "invalid tap" flash */}
               {hasInvalidTap && (
                 <div
-                  className="absolute inset-0 pointer-events-none z-40"
+                  className="absolute inset-0 pointer-events-none"
                   style={{
-                    background: "rgba(255, 235, 59, 0.55)",
+                    background: "rgba(220, 150, 60, 0.45)",
                     animation: "invalidTapFlash 0.4s ease-out forwards",
+                    zIndex: 40,
                   }}
                 />
               )}
 
-              {/* Opponent last-move golden highlight */}
+              {/* Last-move "to" warm golden tint */}
               {isDark && isLastTo && highlightLastMove && (
                 <div
-                  className="absolute inset-0 pointer-events-none z-5"
+                  className="absolute inset-0 pointer-events-none"
                   style={{
-                    background: "rgba(212, 175, 55, 0.3)",
+                    background: "rgba(195, 154, 72, 0.28)",
                     transition: "opacity 0.5s ease",
+                    zIndex: 5,
                   }}
                 />
               )}
@@ -298,36 +302,37 @@ export default function BoardView({
               {/* Last-move "from" subtle tint */}
               {isDark && isLastFrom && highlightLastMove && (
                 <div
-                  className="absolute inset-0 pointer-events-none z-5"
-                  style={{ background: "rgba(212,175,55,0.12)" }}
+                  className="absolute inset-0 pointer-events-none"
+                  style={{ background: "rgba(195, 154, 72, 0.12)", zIndex: 5 }}
                 />
               )}
 
-              {/* Legal move dot — GREEN circle outline (matching video) */}
+              {/* Legal-move marker — solid sage dot on empty square */}
               {isMoveDot && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 10 }}>
                   <div
                     className="rounded-full"
                     style={{
-                      width: "38%",
-                      height: "38%",
-                      background: "transparent",
-                      border: `3px solid ${MOVE_DOT_BORDER}`,
-                      boxShadow: `0 0 8px ${MOVE_DOT_COLOR}, inset 0 0 4px ${MOVE_DOT_COLOR}`,
-                      animation: "greenDotPulse 1.5s ease-in-out infinite",
+                      width: "30%",
+                      height: "30%",
+                      background: MOVE_DOT_COLOR,
+                      border: `2px solid ${MOVE_DOT_BORDER}`,
+                      boxShadow: `0 0 6px ${MOVE_DOT_COLOR}`,
+                      animation: "srSelectedPulse 1.5s ease-in-out infinite",
                     }}
                   />
                 </div>
               )}
 
-              {/* Capture target — green ring around enemy piece */}
+              {/* Capture target — sage ring around enemy piece */}
               {isCaptureTarget && (
                 <div
-                  className="absolute inset-[6%] rounded-full pointer-events-none z-10"
+                  className="absolute inset-[6%] rounded-full pointer-events-none"
                   style={{
-                    border: "3px solid rgba(76, 175, 80, 0.9)",
-                    boxShadow: "0 0 12px rgba(76, 175, 80, 0.7), 0 0 24px rgba(76, 175, 80, 0.4), inset 0 0 8px rgba(76, 175, 80, 0.2)",
-                    animation: "greenRingPulse 1.2s ease-in-out infinite",
+                    border: `3px solid ${MOVE_DOT_BORDER}`,
+                    boxShadow: `0 0 8px ${MOVE_DOT_COLOR}, inset 0 0 6px ${MOVE_DOT_COLOR}`,
+                    animation: "srRingPulse 1.2s ease-in-out infinite",
+                    zIndex: 10,
                   }}
                 />
               )}
@@ -335,8 +340,9 @@ export default function BoardView({
               {/* Piece (hidden at origin and destination during animation) */}
               {piece && isDark && !isAnimOrigin && !isAnimDest && (
                 <div
-                  className="absolute inset-[8%] z-20"
+                  className="absolute inset-[8%]"
                   style={{
+                    zIndex: 20,
                     cursor:
                       canInteract && piece.color === currentTurn && isLegalFrom
                         ? "pointer"
@@ -353,17 +359,20 @@ export default function BoardView({
                 </div>
               )}
 
-              {/* Sliding animated piece — SMOOTH MOVEMENT (key feature from video) */}
+              {/* Sliding animated piece — SMOOTH MOVEMENT */}
               {animating && animating.fromRow === row && animating.fromCol === col && (
                 <div
-                  className="absolute inset-[8%] z-40"
-                  style={getCellSlideStyle(
-                    animating,
-                    containerRef.current
-                      ? containerRef.current.clientWidth / 8
-                      : 50,
-                    animStarted,
-                  )}
+                  className="absolute inset-[8%]"
+                  style={{
+                    ...getCellSlideStyle(
+                      animating,
+                      containerRef.current
+                        ? containerRef.current.clientWidth / 8
+                        : 50,
+                      animStarted,
+                    ),
+                    zIndex: 40,
+                  }}
                 >
                   <Piece
                     piece={animating.piece}
@@ -375,9 +384,9 @@ export default function BoardView({
                 </div>
               )}
 
-              {/* Capture particle explosion */}
+              {/* Capture particle explosion — softer warm palette */}
               {captureParticles.some((p) => p.row === row && p.col === col) && (
-                <div className="absolute inset-0 pointer-events-none z-50 overflow-visible">
+                <div className="absolute inset-0 pointer-events-none overflow-visible" style={{ zIndex: 50 }}>
                   {[...Array(8)].map((_, i) => {
                     const angle = (i / 8) * 360;
                     const dist = 60 + Math.random() * 30;
@@ -391,7 +400,7 @@ export default function BoardView({
                           width: 5,
                           height: 5,
                           borderRadius: "50%",
-                          background: i % 2 === 0 ? "#4CAF50" : "#FFD700",
+                          background: i % 2 === 0 ? "#C39A48" : "#56815D",
                           left: "50%",
                           top: "50%",
                           transform: "translate(-50%, -50%)",

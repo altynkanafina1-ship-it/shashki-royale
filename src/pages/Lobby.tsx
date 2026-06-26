@@ -20,9 +20,6 @@ function isMobileDevice(): boolean {
 export default function Lobby() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  // CRITICAL: use the SAME playerId resolver as OnlineGame — otherwise a logged-in
-  // user creates a room as `auth_<uuid>` but Lobby would try to use the localStorage
-  // anonymous `p_xxx`, causing RLS UPDATE failures inside the match.
   const { playerId } = usePlayerId();
 
   const [mode, setMode] = useState<LobbyMode>("menu");
@@ -68,9 +65,6 @@ export default function Lobby() {
     [cleanup, navigate, playerId],
   );
 
-  // ═══════════════════════════════════════════════════
-  // 🚀 БЫСТРАЯ ИГРА — главная фича
-  // ═══════════════════════════════════════════════════
   const handleQuickPlay = async () => {
     if (!supabaseConfigured) {
       setErrorMsg("Сервер не подключён. Попробуйте позже.");
@@ -80,17 +74,14 @@ export default function Lobby() {
     setMode("quickplay");
 
     try {
-      // 1. Ищем свободную комнату
       const found = await findAndJoinRandomRoom(playerId);
 
       if (found) {
-        // Нашли! Мгновенно подключаемся
         toast.success("Соперник найден!");
         navigateToGame(found.id, "black", found.room_code);
         return;
       }
 
-      // 2. Не нашли — создаём свою и ждём
       const game = await createRoom(playerId);
       gameIdRef.current = game.id;
       setRoomCode(game.room_code);
@@ -98,17 +89,11 @@ export default function Lobby() {
 
       if (!supabase) return;
 
-      // Realtime подписка
       const ch = supabase
         .channel(`lobby_wait:${game.id}`, { config: { broadcast: { self: false } } })
         .on(
           "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "games",
-            filter: `id=eq.${game.id}`,
-          },
+          { event: "UPDATE", schema: "public", table: "games", filter: `id=eq.${game.id}` },
           (payload) => {
             const updated = payload.new as GameRow;
             if (updated.status === "playing" && updated.black_player_id) {
@@ -120,7 +105,6 @@ export default function Lobby() {
         .subscribe();
       channelRef.current = ch;
 
-      // Polling fallback
       pollRef.current = setInterval(async () => {
         const fresh = await fetchGame(game.id);
         if (!fresh) return;
@@ -136,9 +120,6 @@ export default function Lobby() {
     }
   };
 
-  // ═══════════════════════════════════════════════════
-  // 🤝 ИГРАТЬ С ДРУГОМ — по коду
-  // ═══════════════════════════════════════════════════
   const handleCreateRoom = async () => {
     if (!supabaseConfigured) {
       setErrorMsg("Сервер не подключён.");
@@ -158,12 +139,7 @@ export default function Lobby() {
         .channel(`lobby_wait:${game.id}`, { config: { broadcast: { self: false } } })
         .on(
           "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "games",
-            filter: `id=eq.${game.id}`,
-          },
+          { event: "UPDATE", schema: "public", table: "games", filter: `id=eq.${game.id}` },
           (payload) => {
             const updated = payload.new as GameRow;
             if (updated.status === "playing" && updated.black_player_id) {
@@ -215,7 +191,6 @@ export default function Lobby() {
     [joinCode, navigateToGame, playerId],
   );
 
-  // Auto-join по ссылке
   useEffect(() => {
     const roomFromLink = searchParams.get("room") ?? searchParams.get("code");
     if (!supabaseConfigured || !roomFromLink || autoJoinStartedRef.current) return;
@@ -264,31 +239,34 @@ export default function Lobby() {
   return (
     <div
       className="h-[100dvh] flex flex-col overflow-hidden"
-      style={{
-        background:
-          "radial-gradient(ellipse at 50% 0%, rgba(120, 50, 0, 0.3) 0%, transparent 50%), linear-gradient(180deg, #0d0400 0%, #1a0800 100%)",
-      }}
+      style={{ background: "transparent" }}
     >
       {/* Header */}
       <div
         className="flex items-center gap-3 px-4 py-4 flex-shrink-0"
-        style={{ borderBottom: "1px solid rgba(200,150,30,0.15)" }}
+        style={{
+          borderBottom: "1px solid var(--sr-border-soft)",
+          background: "rgba(255,253,248,0.65)",
+          backdropFilter: "blur(8px)",
+        }}
       >
         <button
           onClick={() => { cleanup(); navigate("/"); }}
-          className="p-2 cursor-pointer rounded-xl"
-          style={{ background: "rgba(255,255,255,0.06)" }}
+          className="p-2 cursor-pointer rounded-xl active:scale-95"
+          style={{
+            background: "var(--sr-surface)",
+            border: "1px solid var(--sr-border)",
+            boxShadow: "var(--sr-shadow-sm)",
+            minWidth: 40,
+            minHeight: 40,
+          }}
+          aria-label="Назад"
         >
-          <ChevronLeft className="w-5 h-5" style={{ color: "#ffd700" }} />
+          <ChevronLeft className="w-5 h-5" style={{ color: "var(--sr-wood-deep)" }} />
         </button>
         <h1
           className="text-xl font-bold"
-          style={{
-            fontFamily: "Cinzel, serif",
-            background: "linear-gradient(135deg, #ffd700, #b8860b)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
+          style={{ fontFamily: "Cinzel, serif", color: "var(--sr-wood-deep)" }}
         >
           Онлайн игра
         </h1>
@@ -298,7 +276,6 @@ export default function Lobby() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 overflow-y-auto py-6">
         <AnimatePresence mode="wait">
 
-          {/* ═══════════════ MENU ═══════════════ */}
           {mode === "menu" && (
             <motion.div
               key="menu"
@@ -307,70 +284,78 @@ export default function Lobby() {
               exit={{ opacity: 0, y: -20 }}
               className="w-full max-w-sm space-y-4"
             >
-              {/* Icon */}
               <div className="text-center mb-4">
                 <motion.div
                   className="mx-auto mb-3 flex items-center justify-center"
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
                 >
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: "rgba(212,175,55,0.1)", border: "2px solid rgba(212,175,55,0.3)" }}>
-                    <Zap className="w-8 h-8" style={{ color: "#FFD700" }} />
+                  <div
+                    className="w-16 h-16 rounded-full flex items-center justify-center"
+                    style={{
+                      background: "linear-gradient(135deg, #FAF3E6 0%, #F0E1C4 100%)",
+                      border: "1px solid var(--sr-border-strong)",
+                      boxShadow: "var(--sr-shadow-sm)",
+                    }}
+                  >
+                    <Zap className="w-8 h-8" style={{ color: "var(--sr-wood-deep)" }} />
                   </div>
                 </motion.div>
-                <p className="text-sm" style={{ color: "rgba(212,175,55,0.7)", fontFamily: "Cinzel, serif" }}>
+                <p
+                  className="text-sm font-medium"
+                  style={{ color: "var(--sr-text-muted)" }}
+                >
                   Выберите режим
                 </p>
               </div>
 
-              {/* 🚀 БЫСТРАЯ ИГРА — главная кнопка */}
               <motion.button
                 onClick={handleQuickPlay}
                 whileTap={{ scale: 0.97 }}
-                className="w-full py-5 rounded-2xl font-bold text-xl flex items-center justify-center gap-3 cursor-pointer"
+                className="w-full py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 cursor-pointer"
                 style={{
-                  background: "linear-gradient(135deg, #FFD700 0%, #FF8C00 100%)",
-                  color: "#0d0400",
-                  boxShadow: "0 4px 24px rgba(255,215,0,0.3), 0 0 60px rgba(255,215,0,0.1)",
-                  fontFamily: "Cinzel, serif",
+                  background: "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)",
+                  color: "#2B1B0A",
+                  border: "1px solid rgba(167,126,46,0.55)",
+                  boxShadow: "0 8px 24px rgba(167,126,46,0.28), 0 2px 6px rgba(80,55,30,0.14)",
+                  fontFamily: "Inter, sans-serif",
+                  letterSpacing: "0.02em",
                 }}
               >
                 <Zap className="w-6 h-6" />
                 Быстрая игра
               </motion.button>
-              <p className="text-center text-xs" style={{ color: "rgba(212,175,55,0.45)" }}>
+              <p className="text-center text-xs" style={{ color: "var(--sr-text-muted)" }}>
                 Автоматический поиск соперника — без кодов
               </p>
 
-              {/* Разделитель */}
               <div className="flex items-center gap-3 pt-2">
-                <div className="flex-1 h-px" style={{ background: "rgba(212,175,55,0.15)" }} />
-                <span className="text-xs" style={{ color: "rgba(212,175,55,0.4)" }}>или</span>
-                <div className="flex-1 h-px" style={{ background: "rgba(212,175,55,0.15)" }} />
+                <div className="flex-1 h-px" style={{ background: "var(--sr-border)" }} />
+                <span className="text-xs font-medium" style={{ color: "var(--sr-text-subtle)" }}>или</span>
+                <div className="flex-1 h-px" style={{ background: "var(--sr-border)" }} />
               </div>
 
-              {/* 🤝 ИГРАТЬ С ДРУГОМ */}
               <motion.button
                 onClick={() => setMode("friend_menu")}
                 whileTap={{ scale: 0.97 }}
                 className="w-full py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 cursor-pointer"
                 style={{
-                  background: "rgba(212,175,55,0.08)",
-                  border: "1px solid rgba(212,175,55,0.25)",
-                  color: "#FFD700",
-                  fontFamily: "Cinzel, serif",
+                  background: "var(--sr-surface)",
+                  border: "1px solid var(--sr-border-strong)",
+                  color: "var(--sr-text)",
+                  fontFamily: "Inter, sans-serif",
+                  boxShadow: "var(--sr-shadow-sm)",
                 }}
               >
                 <Users className="w-5 h-5" />
                 Играть с другом
               </motion.button>
-              <p className="text-center text-xs" style={{ color: "rgba(212,175,55,0.35)" }}>
+              <p className="text-center text-xs" style={{ color: "var(--sr-text-subtle)" }}>
                 Создайте комнату и отправьте код другу
               </p>
             </motion.div>
           )}
 
-          {/* ═══════════════ QUICK PLAY SEARCH ═══════════════ */}
           {mode === "quickplay" && (
             <motion.div
               key="quickplay"
@@ -381,14 +366,18 @@ export default function Lobby() {
             >
               <motion.div
                 className="w-20 h-20 mx-auto rounded-full flex items-center justify-center"
-                style={{ background: "rgba(212,175,55,0.1)", border: "2px solid rgba(212,175,55,0.3)" }}
+                style={{
+                  background: "linear-gradient(135deg, #FAF3E6 0%, #F0E1C4 100%)",
+                  border: "1px solid var(--sr-border-strong)",
+                  boxShadow: "var(--sr-shadow-sm)",
+                }}
                 animate={{ rotate: 360 }}
                 transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
               >
-                <Zap className="w-10 h-10" style={{ color: "#FFD700" }} />
+                <Zap className="w-10 h-10" style={{ color: "var(--sr-wood-deep)" }} />
               </motion.div>
               <div>
-                <p className="text-lg font-bold" style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}>
+                <p className="text-lg font-bold" style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}>
                   Поиск соперника...
                 </p>
                 <div className="flex justify-center gap-1 mt-3">
@@ -396,27 +385,30 @@ export default function Lobby() {
                     <motion.div
                       key={i}
                       className="w-2.5 h-2.5 rounded-full"
-                      style={{ background: "#D4AF37" }}
+                      style={{ background: "var(--sr-gold)" }}
                       animate={{ scale: [1, 1.5, 1], opacity: [0.4, 1, 0.4] }}
                       transition={{ repeat: Infinity, duration: 1.2, delay: i * 0.2 }}
                     />
                   ))}
                 </div>
               </div>
-              <p className="text-xs" style={{ color: "rgba(212,175,55,0.5)" }}>
+              <p className="text-xs" style={{ color: "var(--sr-text-muted)" }}>
                 Подключим к первому свободному сопернику
               </p>
               <button
                 onClick={goBack}
                 className="text-sm cursor-pointer py-2 px-4 rounded-lg"
-                style={{ color: "rgba(212,175,55,0.5)", background: "rgba(255,255,255,0.04)" }}
+                style={{
+                  color: "var(--sr-text-muted)",
+                  background: "var(--sr-surface)",
+                  border: "1px solid var(--sr-border)",
+                }}
               >
                 Отмена
               </button>
             </motion.div>
           )}
 
-          {/* ═══════════════ FRIEND MENU ═══════════════ */}
           {mode === "friend_menu" && (
             <motion.div
               key="friend_menu"
@@ -426,8 +418,8 @@ export default function Lobby() {
               className="w-full max-w-sm space-y-4"
             >
               <div className="text-center mb-2">
-                <Users className="w-10 h-10 mx-auto mb-2" style={{ color: "#FFD700" }} />
-                <p className="text-sm" style={{ color: "rgba(212,175,55,0.7)", fontFamily: "Cinzel, serif" }}>
+                <Users className="w-10 h-10 mx-auto mb-2" style={{ color: "var(--sr-wood-deep)" }} />
+                <p className="text-sm font-medium" style={{ color: "var(--sr-text-muted)" }}>
                   Создайте комнату или войдите по коду
                 </p>
               </div>
@@ -439,19 +431,16 @@ export default function Lobby() {
               <div
                 className="rounded-2xl p-4 space-y-3"
                 style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(200,150,30,0.15)",
+                  background: "var(--sr-surface)",
+                  border: "1px solid var(--sr-border)",
+                  boxShadow: "var(--sr-shadow-sm)",
                 }}
               >
-                <p className="text-xs text-center" style={{ color: "rgba(200,150,50,0.7)", fontFamily: "Cinzel, serif" }}>
+                <p className="text-xs text-center font-semibold" style={{ color: "var(--sr-text-muted)" }}>
                   Войти по коду друга
                 </p>
                 {useMobile ? (
-                  <CustomKeypad
-                    value={joinCode}
-                    onChange={setJoinCode}
-                    maxLength={120}
-                  />
+                  <CustomKeypad value={joinCode} onChange={setJoinCode} maxLength={120} />
                 ) : (
                   <input
                     type="text"
@@ -461,12 +450,12 @@ export default function Lobby() {
                     maxLength={120}
                     className="w-full text-center text-2xl font-black tracking-[0.35em] py-3 outline-none"
                     style={{
-                      background: "rgba(0,0,0,0.35)",
-                      border: "1px solid rgba(212,175,55,0.3)",
+                      background: "var(--sr-surface-2)",
+                      border: "1px solid var(--sr-border-strong)",
                       borderRadius: "12px",
-                      color: "#FFD700",
+                      color: "var(--sr-text)",
                       fontFamily: "Cinzel, serif",
-                      caretColor: "#FFD700",
+                      caretColor: "var(--sr-wood-deep)",
                     }}
                     autoFocus
                   />
@@ -483,14 +472,13 @@ export default function Lobby() {
               <button
                 onClick={goBack}
                 className="w-full text-sm cursor-pointer py-2"
-                style={{ color: "rgba(212,175,55,0.4)" }}
+                style={{ color: "var(--sr-text-muted)", fontWeight: 500 }}
               >
                 ← Назад
               </button>
             </motion.div>
           )}
 
-          {/* ═══════════════ CREATING SPINNER ═══════════════ */}
           {mode === "creating" && (
             <motion.div
               key="creating"
@@ -499,12 +487,14 @@ export default function Lobby() {
               exit={{ opacity: 0 }}
               className="text-center space-y-3"
             >
-              <div className="w-10 h-10 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto" />
-              <p style={{ color: "rgba(200,150,50,0.8)" }}>Создание комнаты...</p>
+              <div
+                className="w-10 h-10 border-2 rounded-full animate-spin mx-auto"
+                style={{ borderColor: "var(--sr-border-strong)", borderTopColor: "transparent" }}
+              />
+              <p style={{ color: "var(--sr-text-muted)", fontWeight: 500 }}>Создание комнаты...</p>
             </motion.div>
           )}
 
-          {/* ═══════════════ WAITING FOR OPPONENT ═══════════════ */}
           {mode === "waiting" && (
             <motion.div
               key="waiting"
@@ -513,19 +503,24 @@ export default function Lobby() {
               exit={{ opacity: 0 }}
               className="w-full max-w-sm space-y-5 text-center"
             >
-              {/* Room code card */}
               <div
                 className="p-5 rounded-2xl"
                 style={{
-                  background: "rgba(212,175,55,0.05)",
-                  border: "1px solid rgba(212,175,55,0.3)",
-                  boxShadow: "0 0 30px rgba(212,175,55,0.08)",
+                  background: "linear-gradient(135deg, #FFFDF8 0%, #FAF3E6 100%)",
+                  border: "1px solid var(--sr-border-strong)",
+                  boxShadow: "var(--sr-shadow-card)",
                 }}
               >
-                <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: "rgba(212,175,55,0.5)", fontFamily: "Cinzel, serif" }}>
+                <p
+                  className="text-xs uppercase tracking-[0.3em] mb-2 font-semibold"
+                  style={{ color: "var(--sr-text-muted)" }}
+                >
                   Код комнаты
                 </p>
-                <p className="text-5xl font-black tracking-[0.3em] mb-4" style={{ fontFamily: "Cinzel, serif", color: "#FFD700" }}>
+                <p
+                  className="text-5xl font-black tracking-[0.3em] mb-4"
+                  style={{ fontFamily: "Cinzel, serif", color: "var(--sr-wood-deep)" }}
+                >
                   {roomCode}
                 </p>
                 <button
@@ -533,10 +528,10 @@ export default function Lobby() {
                   className="flex items-center gap-2 mx-auto py-2.5 px-6 cursor-pointer text-sm font-semibold transition-all active:scale-95"
                   style={{
                     borderRadius: "12px",
-                    background: copied ? "rgba(100,200,100,0.15)" : "rgba(212,175,55,0.12)",
-                    border: `1px solid ${copied ? "rgba(100,200,100,0.4)" : "rgba(212,175,55,0.35)"}`,
-                    color: copied ? "#86efac" : "#FFD700",
-                    fontFamily: "Cinzel, serif",
+                    background: copied ? "#EAF3EA" : "var(--sr-surface)",
+                    border: `1px solid ${copied ? "rgba(86,129,93,0.5)" : "var(--sr-border-strong)"}`,
+                    color: copied ? "#3D5F45" : "var(--sr-text)",
+                    fontFamily: "Inter, sans-serif",
                   }}
                 >
                   {copied ? <><Check className="w-4 h-4" /> Скопировано</> : <><Copy className="w-4 h-4" /> Скопировать код</>}
@@ -546,17 +541,16 @@ export default function Lobby() {
                   className="mt-3 flex items-center gap-2 mx-auto py-2.5 px-6 cursor-pointer text-sm font-semibold transition-all active:scale-95"
                   style={{
                     borderRadius: "12px",
-                    background: inviteCopied ? "rgba(100,200,100,0.15)" : "rgba(255,255,255,0.06)",
-                    border: `1px solid ${inviteCopied ? "rgba(100,200,100,0.4)" : "rgba(212,175,55,0.22)"}`,
-                    color: inviteCopied ? "#86efac" : "rgba(255,215,0,0.9)",
-                    fontFamily: "Cinzel, serif",
+                    background: inviteCopied ? "#EAF3EA" : "var(--sr-surface-2)",
+                    border: `1px solid ${inviteCopied ? "rgba(86,129,93,0.5)" : "var(--sr-border)"}`,
+                    color: inviteCopied ? "#3D5F45" : "var(--sr-text-muted)",
+                    fontFamily: "Inter, sans-serif",
                   }}
                 >
                   {inviteCopied ? <><Check className="w-4 h-4" /> Готово</> : <><Share2 className="w-4 h-4" /> Поделиться</>}
                 </button>
               </div>
 
-              {/* Searching animation */}
               <div className="flex flex-col items-center gap-2">
                 <div className="flex items-center gap-2">
                   <div className="flex gap-1">
@@ -564,17 +558,17 @@ export default function Lobby() {
                       <motion.div
                         key={i}
                         className="w-2 h-2 rounded-full"
-                        style={{ background: "#D4AF37" }}
+                        style={{ background: "var(--sr-gold)" }}
                         animate={{ scale: [1, 1.5, 1], opacity: [0.4, 1, 0.4] }}
                         transition={{ repeat: Infinity, duration: 1.2, delay: i * 0.2 }}
                       />
                     ))}
                   </div>
-                  <p className="text-sm" style={{ color: "rgba(212,175,55,0.7)", fontFamily: "Cinzel, serif" }}>
+                  <p className="text-sm font-medium" style={{ color: "var(--sr-text-muted)" }}>
                     Ожидание соперника...
                   </p>
                 </div>
-                <p className="text-xs" style={{ color: "rgba(212,175,55,0.35)" }}>
+                <p className="text-xs" style={{ color: "var(--sr-text-subtle)" }}>
                   Друг может войти по коду или по ссылке
                 </p>
               </div>
@@ -582,14 +576,13 @@ export default function Lobby() {
               <button
                 onClick={goBack}
                 className="text-sm cursor-pointer"
-                style={{ color: "rgba(212,175,55,0.4)" }}
+                style={{ color: "var(--sr-text-muted)", fontWeight: 500 }}
               >
                 Отмена
               </button>
             </motion.div>
           )}
 
-          {/* ═══════════════ JOINING SPINNER ═══════════════ */}
           {mode === "joining" && (
             <motion.div
               key="joining"
@@ -598,12 +591,14 @@ export default function Lobby() {
               exit={{ opacity: 0 }}
               className="text-center space-y-3"
             >
-              <div className="w-10 h-10 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto" />
-              <p style={{ color: "rgba(200,150,50,0.8)" }}>Подключение к комнате...</p>
+              <div
+                className="w-10 h-10 border-2 rounded-full animate-spin mx-auto"
+                style={{ borderColor: "var(--sr-border-strong)", borderTopColor: "transparent" }}
+              />
+              <p style={{ color: "var(--sr-text-muted)", fontWeight: 500 }}>Подключение к комнате...</p>
             </motion.div>
           )}
 
-          {/* ═══════════════ ERROR ═══════════════ */}
           {mode === "error" && (
             <motion.div
               key="error"
@@ -611,19 +606,23 @@ export default function Lobby() {
               animate={{ opacity: 1, y: 0 }}
               className="w-full max-w-sm space-y-4 text-center"
             >
-              <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center" style={{ background: "rgba(255,100,100,0.1)" }}>
+              <div
+                className="w-12 h-12 mx-auto rounded-full flex items-center justify-center"
+                style={{ background: "var(--sr-danger-soft)", border: "1px solid var(--sr-danger)" }}
+              >
                 <span className="text-2xl">⚠️</span>
               </div>
-              <p className="text-sm leading-relaxed" style={{ color: "rgba(255,150,100,0.9)" }}>
+              <p className="text-sm leading-relaxed font-medium" style={{ color: "var(--sr-danger)" }}>
                 {errorMsg}
               </p>
               <button
                 onClick={goBack}
-                className="py-2 px-6 rounded-xl text-sm cursor-pointer"
+                className="py-2.5 px-6 rounded-xl text-sm cursor-pointer font-semibold"
                 style={{
-                  background: "rgba(200,150,30,0.15)",
-                  border: "1px solid rgba(200,150,30,0.3)",
-                  color: "#ffd700",
+                  background: "var(--sr-surface)",
+                  border: "1px solid var(--sr-border-strong)",
+                  color: "var(--sr-text)",
+                  boxShadow: "var(--sr-shadow-sm)",
                 }}
               >
                 Попробовать снова
@@ -637,7 +636,6 @@ export default function Lobby() {
   );
 }
 
-/** Map common errors to Russian */
 function russianError(msg: string): string {
   const lower = msg.toLowerCase();
   if (lower.includes("комната не найдена") || lower.includes("no rows") || lower.includes("invalid input")) {

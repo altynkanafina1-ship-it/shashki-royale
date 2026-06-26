@@ -94,7 +94,7 @@ export default function RegisterPage() {
       className="min-h-screen flex flex-col px-4 py-6"
       style={{
         background:
-          "radial-gradient(ellipse at 50% 0%, rgba(120,50,0,0.35) 0%, transparent 60%), linear-gradient(180deg, #0d0400 0%, #1a0800 50%, #0d0400 100%)",
+          "transparent",
       }}
     >
       <motion.div
@@ -110,9 +110,9 @@ export default function RegisterPage() {
           whileTap={{ scale: 0.95 }}
           className="self-start p-2 rounded-lg mb-4 transition-all"
           style={{
-            background: "rgba(212,175,55,0.08)",
-            border: "1px solid rgba(212,175,55,0.15)",
-            color: "#D4AF37",
+            background: "var(--sr-surface)",
+            border: "1px solid var(--sr-border)",
+            color: "var(--sr-wood-deep)",
           }}
           title="Вернуться назад"
         >
@@ -125,20 +125,20 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <h1
             className="text-4xl font-bold mb-2"
-            style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}
+            style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
           >
             ♔ Шашки Рояль ♔
           </h1>
-          <p style={{ color: "rgba(212,175,55,0.6)" }}>Создание аккаунта</p>
+          <p style={{ color: "var(--sr-text-muted)" }}>Создание аккаунта</p>
         </div>
 
         {/* Form Card */}
         <div
           className="p-6 rounded-2xl backdrop-blur-sm flex-1"
           style={{
-            background: "rgba(26, 8, 0, 0.9)",
-            border: "1px solid rgba(212,175,55,0.25)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+            background: "var(--sr-surface)",
+            border: "1px solid var(--sr-border-strong)",
+            boxShadow: "0 8px 32px rgba(80,55,30,0.15)",
           }}
         >
           <div className="space-y-4 mb-6">
@@ -150,8 +150,8 @@ export default function RegisterPage() {
               whileTap={{ scale: 0.98 }}
               className="w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
               style={{
-                background: "linear-gradient(135deg, #FFD700 0%, #FF8C00 100%)",
-                color: "#0d0400",
+                background: "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)",
+                color: "#2B1B0A",
                 boxShadow: "0 0 28px rgba(255,215,0,0.25)",
               }}
             >
@@ -174,14 +174,14 @@ export default function RegisterPage() {
             <div>
               <label
                 className="block text-sm font-semibold mb-2"
-                style={{ color: "#D4AF37", fontFamily: "Cinzel, serif" }}
+                style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
               >
                 Email
               </label>
               <div className="relative">
                 <Mail
                   className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
-                  style={{ color: "rgba(212,175,55,0.5)" }}
+                  style={{ color: "var(--sr-text-muted)" }}
                 />
                 <input
                   type="email"
@@ -190,15 +190,15 @@ export default function RegisterPage() {
                   placeholder="your@email.com"
                   className="w-full pl-10 pr-4 py-3 rounded-lg bg-opacity-50 outline-none transition-all"
                   style={{
-                    background: "rgba(212,175,55,0.08)",
-                    border: "1px solid rgba(212,175,55,0.2)",
-                    color: "#fff",
+                    background: "var(--sr-surface)",
+                    border: "1px solid var(--sr-border)",
+                    color: "var(--sr-text)",
                   }}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(212,175,55,0.5)";
+                    e.currentTarget.style.borderColor = "var(--sr-text-muted)";
                   }}
                   onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(212,175,55,0.2)";
+                    e.currentTarget.style.borderColor = "var(--sr-border)";
                   }}
                 />
               </div>
@@ -208,14 +208,14 @@ export default function RegisterPage() {
             <div>
               <label
                 className="block text-sm font-semibold mb-2"
-                style={{ color: "#D4AF37", fontFamily: "Cinzel, serif" }}
+                style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
               >
                 Никнейм
               </label>
               <div className="relative">
                 <User
                   className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
-                  style={{ color: "rgba(212,175,55,0.5)" }}
+                  style={{ color: "var(--sr-text-muted)" }}
                 />
                 <input
                   type="text"
@@ -224,15 +224,15 @@ export default function RegisterPage() {
                   placeholder="Ваш никнейм"
                   className="w-full pl-10 pr-4 py-3 rounded-lg bg-opacity-50 outline-none transition-all"
                   style={{
-                    background: "rgba(212,175,55,0.08)",
-                    border: "1px solid rgba(212,175,55,0.2)",
-                    color: "#fff",
+                    background: "var(--sr-surface)",
+                    border: "1px solid var(--sr-border)",
+                    color: "var(--sr-text)",
                   }}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(212,175,55,0.5)";
+                    e.currentTarget.style.borderColor = "var(--sr-text-muted)";
                   }}
                   onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(212,175,55,0.2)";
+                    e.currentTarget.style.borderColor = "var(--sr-border)";
                   }}
                 />
               </div>
@@ -245,7 +245,7 @@ export default function RegisterPage() {
             <div>
               <label
                 className="block text-sm font-semibold mb-2"
-                style={{ color: "#D4AF37", fontFamily: "Cinzel, serif" }}
+                style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
               >
                 Аватар
               </label>
@@ -262,18 +262,18 @@ export default function RegisterPage() {
                       background:
                         selectedAvatar === idx
                           ? "rgba(212,175,55,0.3)"
-                          : "rgba(212,175,55,0.08)",
+                          : "var(--sr-surface)",
                       border:
                         selectedAvatar === idx
                           ? "2px solid #D4AF37"
-                          : "1px solid rgba(212,175,55,0.2)",
+                          : "1px solid var(--sr-border)",
                     }}
                   >
                     {avatar}
                     {selectedAvatar === idx && (
                       <Check
                         className="absolute top-1 right-1 w-4 h-4"
-                        style={{ color: "#D4AF37" }}
+                        style={{ color: "var(--sr-wood-deep)" }}
                       />
                     )}
                   </motion.button>
@@ -285,14 +285,14 @@ export default function RegisterPage() {
             <div>
               <label
                 className="block text-sm font-semibold mb-2"
-                style={{ color: "#D4AF37", fontFamily: "Cinzel, serif" }}
+                style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
               >
                 Пароль
               </label>
               <div className="relative">
                 <Lock
                   className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
-                  style={{ color: "rgba(212,175,55,0.5)" }}
+                  style={{ color: "var(--sr-text-muted)" }}
                 />
                 <input
                   type={showPassword ? "text" : "password"}
@@ -301,15 +301,15 @@ export default function RegisterPage() {
                   placeholder="••••••••"
                   className="w-full pl-10 pr-10 py-3 rounded-lg bg-opacity-50 outline-none transition-all"
                   style={{
-                    background: "rgba(212,175,55,0.08)",
-                    border: "1px solid rgba(212,175,55,0.2)",
-                    color: "#fff",
+                    background: "var(--sr-surface)",
+                    border: "1px solid var(--sr-border)",
+                    color: "var(--sr-text)",
                   }}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(212,175,55,0.5)";
+                    e.currentTarget.style.borderColor = "var(--sr-text-muted)";
                   }}
                   onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(212,175,55,0.2)";
+                    e.currentTarget.style.borderColor = "var(--sr-border)";
                   }}
                 />
                 <button
@@ -318,9 +318,9 @@ export default function RegisterPage() {
                   className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
                   {showPassword ? (
-                    <EyeOff className="w-5 h-5" style={{ color: "rgba(212,175,55,0.5)" }} />
+                    <EyeOff className="w-5 h-5" style={{ color: "var(--sr-text-muted)" }} />
                   ) : (
-                    <Eye className="w-5 h-5" style={{ color: "rgba(212,175,55,0.5)" }} />
+                    <Eye className="w-5 h-5" style={{ color: "var(--sr-text-muted)" }} />
                   )}
                 </button>
               </div>
@@ -333,14 +333,14 @@ export default function RegisterPage() {
             <div>
               <label
                 className="block text-sm font-semibold mb-2"
-                style={{ color: "#D4AF37", fontFamily: "Cinzel, serif" }}
+                style={{ color: "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
               >
                 Подтвердить пароль
               </label>
               <div className="relative">
                 <Lock
                   className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
-                  style={{ color: "rgba(212,175,55,0.5)" }}
+                  style={{ color: "var(--sr-text-muted)" }}
                 />
                 <input
                   type={showConfirm ? "text" : "password"}
@@ -349,15 +349,15 @@ export default function RegisterPage() {
                   placeholder="••••••••"
                   className="w-full pl-10 pr-10 py-3 rounded-lg bg-opacity-50 outline-none transition-all"
                   style={{
-                    background: "rgba(212,175,55,0.08)",
-                    border: "1px solid rgba(212,175,55,0.2)",
-                    color: "#fff",
+                    background: "var(--sr-surface)",
+                    border: "1px solid var(--sr-border)",
+                    color: "var(--sr-text)",
                   }}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(212,175,55,0.5)";
+                    e.currentTarget.style.borderColor = "var(--sr-text-muted)";
                   }}
                   onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(212,175,55,0.2)";
+                    e.currentTarget.style.borderColor = "var(--sr-border)";
                   }}
                 />
                 <button
@@ -366,9 +366,9 @@ export default function RegisterPage() {
                   className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
                   {showConfirm ? (
-                    <EyeOff className="w-5 h-5" style={{ color: "rgba(212,175,55,0.5)" }} />
+                    <EyeOff className="w-5 h-5" style={{ color: "var(--sr-text-muted)" }} />
                   ) : (
-                    <Eye className="w-5 h-5" style={{ color: "rgba(212,175,55,0.5)" }} />
+                    <Eye className="w-5 h-5" style={{ color: "var(--sr-text-muted)" }} />
                   )}
                 </button>
               </div>
@@ -382,8 +382,8 @@ export default function RegisterPage() {
               whileTap={{ scale: 0.98 }}
               className="w-full py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
               style={{
-                background: "linear-gradient(135deg, #D4AF37 0%, #FFD700 100%)",
-                color: "#0d0400",
+                background: "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)",
+                color: "#2B1B0A",
               }}
             >
               {loading ? (
@@ -398,21 +398,21 @@ export default function RegisterPage() {
           </form>
 
           {/* Login Link */}
-          <div className="mt-6 pt-6 border-t" style={{ borderColor: "rgba(212,175,55,0.2)" }}>
+          <div className="mt-6 pt-6 border-t" style={{ borderColor: "var(--sr-border)" }}>
             <p
               className="text-center text-sm"
-              style={{ color: "rgba(212,175,55,0.6)" }}
+              style={{ color: "var(--sr-text-muted)" }}
             >
               Уже есть профиль?{" "}
               <Link
                 to="/auth/login"
                 className="font-semibold transition-colors"
-                style={{ color: "#D4AF37" }}
+                style={{ color: "var(--sr-wood-deep)" }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.color = "#FFD700";
+                  e.currentTarget.style.color = "var(--sr-wood-deep)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = "#D4AF37";
+                  e.currentTarget.style.color = "var(--sr-wood-deep)";
                 }}
               >
                 Войти

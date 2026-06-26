@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v1.5.0-light-board';
+const CACHE_VERSION = 'v2.0.0-light-premium';
 const CACHE_NAME = `shashki-royale-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [

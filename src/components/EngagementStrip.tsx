@@ -3,13 +3,6 @@ import { motion } from "motion/react";
 import { readDailyLogin } from "../services/engagement.ts";
 import { useProfile } from "../hooks/use-profile.ts";
 
-/**
- * Компактная engagement-полоска для главной:
- *  • 🔥 Серия побед (win_streak, server-side)
- *  • 📅 Дней подряд в игре (daily login, localStorage)
- *  • 🎯 Прогресс ежедневного челленджа (Win 3 today)
- * Только cosmetic / motivational — никаких Coin-наград (защищает экономику).
- */
 export default function EngagementStrip() {
   const { profile } = useProfile();
   const [loginDays, setLoginDays] = useState(0);
@@ -30,7 +23,6 @@ export default function EngagementStrip() {
   const challengeGoal = 3;
   const challengeDone = challengeWins >= challengeGoal;
 
-  // Если никаких значимых данных нет — не загромождаем UI
   if (winStreak === 0 && loginDays <= 1 && challengeWins === 0) return null;
 
   return (
@@ -38,64 +30,84 @@ export default function EngagementStrip() {
       data-testid="engagement-strip"
       initial={{ opacity: 0, y: -4 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15, duration: 0.4 }}
+      transition={{ delay: 0.12, duration: 0.4 }}
       className="w-full max-w-sm flex gap-2"
     >
-      {/* Win streak */}
       {winStreak > 0 && (
         <div
           data-testid="strip-win-streak"
           className="flex-1 px-2.5 py-2 rounded-xl text-center"
           style={{
-            background: "rgba(255,80,0,0.10)",
-            border: "1px solid rgba(255,140,0,0.35)",
+            background: "linear-gradient(135deg, #FBE8D6 0%, #F5D8B8 100%)",
+            border: "1px solid rgba(232, 142, 64, 0.4)",
+            boxShadow: "var(--sr-shadow-sm)",
           }}
           title={bestStreak > 0 ? `Рекорд: ${bestStreak}` : ""}
         >
-          <div className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(255,160,80,0.7)", fontFamily: "Cinzel, serif" }}>
+          <div
+            className="text-[10px] uppercase tracking-wider font-semibold"
+            style={{ color: "#A85A1F" }}
+          >
             Серия 🔥
           </div>
-          <div className="text-lg font-bold leading-tight" style={{ color: "#ffb347", fontFamily: "Cinzel, serif" }}>
+          <div
+            className="text-lg font-bold leading-tight"
+            style={{ color: "#A85A1F", fontFamily: "Cinzel, serif" }}
+          >
             {winStreak}
           </div>
         </div>
       )}
 
-      {/* Daily login streak */}
       {loginDays >= 2 && (
         <div
           data-testid="strip-daily-login"
           className="flex-1 px-2.5 py-2 rounded-xl text-center"
           style={{
-            background: "rgba(76,175,80,0.10)",
-            border: "1px solid rgba(76,175,80,0.30)",
+            background: "linear-gradient(135deg, #DCEEDF 0%, #C7E4CC 100%)",
+            border: "1px solid rgba(86,129,93,0.4)",
+            boxShadow: "var(--sr-shadow-sm)",
           }}
         >
-          <div className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(140,200,140,0.75)", fontFamily: "Cinzel, serif" }}>
+          <div
+            className="text-[10px] uppercase tracking-wider font-semibold"
+            style={{ color: "#3D5F45" }}
+          >
             Дней подряд
           </div>
-          <div className="text-lg font-bold leading-tight" style={{ color: "#7ed87e", fontFamily: "Cinzel, serif" }}>
+          <div
+            className="text-lg font-bold leading-tight"
+            style={{ color: "#3D5F45", fontFamily: "Cinzel, serif" }}
+          >
             {loginDays}
           </div>
         </div>
       )}
 
-      {/* Daily challenge (Win 3 today) */}
       <div
         data-testid="strip-daily-challenge"
         className="flex-1 px-2.5 py-2 rounded-xl text-center"
         style={{
-          background: challengeDone ? "rgba(212,175,55,0.18)" : "rgba(212,175,55,0.06)",
+          background: challengeDone
+            ? "linear-gradient(135deg, #F3DEA0 0%, #E0BD6A 100%)"
+            : "linear-gradient(135deg, #FAF3E6 0%, #F0E1C4 100%)",
           border: challengeDone
-            ? "1px solid rgba(212,175,55,0.6)"
-            : "1px solid rgba(212,175,55,0.25)",
+            ? "1px solid var(--sr-wood-deep)"
+            : "1px solid var(--sr-border-strong)",
+          boxShadow: "var(--sr-shadow-sm)",
         }}
         title={challengeDone ? "Чемпион дня — выполнен!" : "Выиграй 3 партии за сегодня → титул «Чемпион дня»"}
       >
-        <div className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(212,175,55,0.7)", fontFamily: "Cinzel, serif" }}>
+        <div
+          className="text-[10px] uppercase tracking-wider font-semibold"
+          style={{ color: challengeDone ? "#5C3F18" : "var(--sr-text-muted)" }}
+        >
           {challengeDone ? "Чемпион 👑" : "Цель дня"}
         </div>
-        <div className="text-lg font-bold leading-tight" style={{ color: "#FFD700", fontFamily: "Cinzel, serif" }}>
+        <div
+          className="text-lg font-bold leading-tight"
+          style={{ color: challengeDone ? "#5C3F18" : "var(--sr-wood-deep)", fontFamily: "Cinzel, serif" }}
+        >
           {Math.min(challengeWins, challengeGoal)}/{challengeGoal}
         </div>
       </div>

@@ -661,21 +661,22 @@ export default function OnlineGame() {
     return (
       <div
         className="h-[100dvh] flex flex-col items-center justify-center px-6 gap-5"
-        style={{ background: "radial-gradient(ellipse at center, #2C1810 0%, #0A0503 100%)" }}
+        style={{ background: "transparent" }}
       >
-        <AlertCircle className="w-12 h-12 text-red-400" />
-        <p className="text-center text-sm font-medium" style={{ color: "rgba(255,150,100,0.9)" }}>
+        <AlertCircle className="w-12 h-12" style={{ color: "var(--sr-danger)" }} />
+        <p className="text-center text-sm font-medium" style={{ color: "var(--sr-danger)" }}>
           {loadError}
         </p>
         <button
           onClick={() => navigate("/")}
-          className="py-2.5 px-6 cursor-pointer"
+          className="py-2.5 px-6 cursor-pointer font-semibold"
           style={{
             borderRadius: "12px",
-            background: "rgba(212,175,55,0.1)",
-            border: "1px solid rgba(212,175,55,0.3)",
-            color: "#FFD700",
-            fontFamily: "Cinzel, serif",
+            background: "var(--sr-surface)",
+            border: "1px solid var(--sr-border-strong)",
+            color: "var(--sr-text)",
+            fontFamily: "Inter, sans-serif",
+            boxShadow: "var(--sr-shadow-sm)",
           }}
         >
           На главный экран
@@ -688,16 +689,16 @@ export default function OnlineGame() {
     return (
       <div
         className="h-[100dvh] flex flex-col items-center justify-center px-6 gap-5"
-        style={{ background: "radial-gradient(ellipse at center, #2C1810 0%, #0A0503 100%)" }}
+        style={{ background: "transparent" }}
       >
-        <AlertCircle className="w-12 h-12 text-red-400" />
-        <p className="text-center text-sm" style={{ color: "rgba(255,150,100,0.9)" }}>
+        <AlertCircle className="w-12 h-12" style={{ color: "var(--sr-danger)" }} />
+        <p className="text-center text-sm font-medium" style={{ color: "var(--sr-danger)" }}>
           Онлайн-режим не настроен. Проверьте подключение Supabase.
         </p>
         <button
           onClick={() => navigate("/")}
-          className="text-sm cursor-pointer"
-          style={{ color: "#FFD700" }}
+          className="text-sm cursor-pointer font-semibold"
+          style={{ color: "var(--sr-wood-deep)" }}
         >
           На главный экран
         </button>
@@ -708,19 +709,30 @@ export default function OnlineGame() {
   return (
     <div
       className="h-[100dvh] flex flex-col overflow-hidden"
-      style={{ background: "radial-gradient(ellipse at center, #2C1810 0%, #0A0503 100%)" }}
+      style={{ background: "transparent" }}
     >
       {/* Header */}
       <div
         className="flex items-center justify-between px-4 py-3 flex-shrink-0"
-        style={{ borderBottom: "1px solid rgba(212,175,55,0.15)" }}
+        style={{
+          borderBottom: "1px solid var(--sr-border-soft)",
+          background: "rgba(255,253,248,0.65)",
+          backdropFilter: "blur(8px)",
+        }}
       >
         <button
           onClick={() => { clearActiveGame(); navigate("/"); }}
-          className="p-2 cursor-pointer rounded-xl"
-          style={{ background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.12)" }}
+          className="p-2 cursor-pointer rounded-xl active:scale-95"
+          style={{
+            background: "var(--sr-surface)",
+            border: "1px solid var(--sr-border)",
+            boxShadow: "var(--sr-shadow-sm)",
+            minWidth: 40,
+            minHeight: 40,
+          }}
+          aria-label="Назад"
         >
-          <ChevronLeft className="w-5 h-5" style={{ color: "#D4AF37" }} />
+          <ChevronLeft className="w-5 h-5" style={{ color: "var(--sr-wood-deep)" }} />
         </button>
 
         <div className="text-center">
@@ -728,30 +740,44 @@ export default function OnlineGame() {
             <div
               className={`w-2 h-2 rounded-full transition-colors ${
                 connectionLost
-                  ? "bg-red-400"
+                  ? ""
                   : opponentConnected
-                  ? "bg-green-400"
-                  : "bg-yellow-400 animate-pulse"
+                  ? ""
+                  : "animate-pulse"
               }`}
+              style={{
+                background: connectionLost
+                  ? "var(--sr-danger)"
+                  : opponentConnected
+                  ? "#56815D"
+                  : "#BC8B33",
+              }}
             />
             <p
-              className="text-xs uppercase tracking-widest"
-              style={{ color: "rgba(212,175,55,0.6)", fontFamily: "Cinzel, serif" }}
+              className="text-[11px] uppercase tracking-[0.2em] font-bold"
+              style={{ color: "var(--sr-text-muted)", fontFamily: "Inter, sans-serif" }}
             >
               {connectionLost ? "Нет связи" : opponentConnected ? "Онлайн" : "Ожидание..."}
             </p>
           </div>
-          <p className="text-xs mt-0.5" style={{ color: "rgba(212,175,55,0.4)" }}>
+          <p className="text-xs mt-0.5" style={{ color: "var(--sr-text-subtle)" }}>
             Ход {gameState.moveNumber}
           </p>
         </div>
 
         <button
           onClick={() => setShowResignConfirm(true)}
-          className="p-2 cursor-pointer rounded-xl"
-          style={{ background: "rgba(180,30,0,0.2)", border: "1px solid rgba(200,50,30,0.2)" }}
+          className="p-2 cursor-pointer rounded-xl active:scale-95"
+          style={{
+            background: "var(--sr-surface)",
+            border: "1px solid rgba(167,71,64,0.35)",
+            boxShadow: "var(--sr-shadow-sm)",
+            minWidth: 40,
+            minHeight: 40,
+          }}
+          aria-label="Сдаться"
         >
-          <Flag className="w-5 h-5 text-red-400" />
+          <Flag className="w-5 h-5" style={{ color: "var(--sr-danger)" }} />
         </button>
       </div>
 
@@ -761,30 +787,36 @@ export default function OnlineGame() {
           key={`${gameState.currentTurn}-${isMyTurn}`}
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-center gap-2 py-2 rounded-xl"
-          style={{ background: "rgba(255,255,255,0.04)" }}
+          className="flex items-center justify-center gap-2 py-2.5 rounded-xl"
+          style={{
+            background: isMyTurn
+              ? "linear-gradient(135deg, #FAF3E6 0%, #F0E1C4 100%)"
+              : "var(--sr-surface-2)",
+            border: `1px solid ${isMyTurn ? "var(--sr-border-strong)" : "var(--sr-border-soft)"}`,
+            boxShadow: isMyTurn ? "var(--sr-shadow-sm)" : "none",
+          }}
         >
-          {/* Piece color indicator */}
           <div
-            className="w-5 h-5 rounded-full border-2 flex-shrink-0"
+            className="w-5 h-5 rounded-full flex-shrink-0"
             style={{
               background:
                 gameState.currentTurn === "white"
-                  ? "radial-gradient(circle at 35% 35%, #FFFFFF 0%, #D4B896 100%)"
-                  : "radial-gradient(circle at 35% 35%, #555 0%, #000 100%)",
-              borderColor: "#D4AF37",
+                  ? "radial-gradient(circle at 35% 32%, #FFFFFF 0%, #F4E8D0 45%, #D9C39E 100%)"
+                  : "radial-gradient(circle at 35% 32%, #5A5048 0%, #2E2620 50%, #1A1410 100%)",
+              border: `1.5px solid ${gameState.currentTurn === "white" ? "#BFA078" : "#3A2F26"}`,
             }}
           />
           <span
             data-testid="turn-status"
-            className="font-semibold text-sm"
+            className="font-bold text-sm"
             style={{
-              fontFamily: "Cinzel, serif",
+              fontFamily: "Inter, sans-serif",
               color: sending
-                ? "rgba(212,175,55,0.5)"
+                ? "var(--sr-text-muted)"
                 : isMyTurn
-                ? "#FFD700"
-                : "rgba(255,255,255,0.5)",
+                ? "var(--sr-wood-deep)"
+                : "var(--sr-text-muted)",
+              letterSpacing: "0.02em",
             }}
           >
             {sending ? "Отправка..." : isMyTurn ? "Ваш ход" : "Ход соперника"}
@@ -800,10 +832,13 @@ export default function OnlineGame() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               className="flex items-center gap-2 py-1.5 px-3 rounded-lg"
-              style={{ background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.25)" }}
+              style={{
+                background: "#EAF3EA",
+                border: "1px solid rgba(86,129,93,0.4)",
+              }}
             >
-              <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: "#D4AF37" }} />
-              <span className="text-xs" style={{ color: "#FFD700" }}>Противник походил ✓</span>
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: "#56815D" }} />
+              <span className="text-xs font-medium" style={{ color: "#3D5F45" }}>Противник походил ✓</span>
             </motion.div>
           )}
           {hasMandatory && (
@@ -813,19 +848,19 @@ export default function OnlineGame() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="flex items-center gap-2 py-1 px-2.5 rounded-md"
+              className="flex items-center gap-2 py-1.5 px-2.5 rounded-md"
               style={{
-                background: "rgba(212,175,55,0.10)",
-                border: "1px solid rgba(212,175,55,0.30)",
+                background: "rgba(195, 154, 72, 0.14)",
+                border: "1px solid rgba(167, 126, 46, 0.4)",
               }}
             >
               <AlertCircle
                 className="w-3.5 h-3.5 flex-shrink-0"
-                style={{ color: "#D4AF37" }}
+                style={{ color: "var(--sr-wood-deep)" }}
               />
               <span
-                className="text-[11px] leading-tight"
-                style={{ color: "rgba(255,215,0,0.85)" }}
+                className="text-[11px] leading-tight font-medium"
+                style={{ color: "var(--sr-wood-deep)" }}
               >
                 Доступно обязательное взятие
               </span>
@@ -838,10 +873,10 @@ export default function OnlineGame() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="flex items-center gap-2 py-1.5 px-3 rounded-lg"
-              style={{ background: "rgba(150, 100, 0, 0.2)", border: "1px solid rgba(200,150,0,0.3)" }}
+              style={{ background: "rgba(188, 139, 51, 0.14)", border: "1px solid rgba(188, 139, 51, 0.4)" }}
             >
-              <WifiOff className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-              <span className="text-xs text-yellow-300">Соединение нестабильно... Переподключение</span>
+              <WifiOff className="w-4 h-4 flex-shrink-0" style={{ color: "var(--sr-warning)" }} />
+              <span className="text-xs font-medium" style={{ color: "#8A6520" }}>Соединение нестабильно... Переподключение</span>
             </motion.div>
           )}
           {syncError && (
@@ -851,10 +886,10 @@ export default function OnlineGame() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="flex items-center gap-2 py-1.5 px-3 rounded-lg"
-              style={{ background: "rgba(200, 50, 0, 0.2)", border: "1px solid rgba(220,80,0,0.35)" }}
+              style={{ background: "rgba(167, 71, 64, 0.12)", border: "1px solid rgba(167, 71, 64, 0.4)" }}
             >
-              <AlertCircle className="w-4 h-4 text-red-300 flex-shrink-0" />
-              <span className="text-xs text-red-300">{syncError}</span>
+              <AlertCircle className="w-4 h-4 flex-shrink-0" style={{ color: "var(--sr-danger)" }} />
+              <span className="text-xs font-medium" style={{ color: "var(--sr-danger)" }}>{syncError}</span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -862,11 +897,11 @@ export default function OnlineGame() {
 
       {/* My color badge */}
       <div className="px-4 pb-1 flex-shrink-0 text-center">
-        <span className="text-xs" style={{ color: "rgba(212,175,55,0.4)" }}>
+        <span className="text-xs" style={{ color: "var(--sr-text-subtle)" }}>
           Вы:{" "}
           <span
             style={{
-              color: myColor === "white" ? "#FFD700" : "rgba(220,220,220,0.7)",
+              color: "var(--sr-text)",
               fontWeight: 600,
             }}
           >
@@ -939,36 +974,39 @@ export default function OnlineGame() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ background: "rgba(43, 27, 10, 0.35)", backdropFilter: "blur(6px)" }}
           >
             <div
               className="mx-6 p-6 rounded-2xl"
               style={{
-                background: "#1a0800",
-                border: "1px solid rgba(212,175,55,0.25)",
-                maxWidth: 300,
+                background: "var(--sr-surface)",
+                border: "1px solid var(--sr-border-strong)",
+                boxShadow: "var(--sr-shadow-lg)",
+                maxWidth: 320,
                 width: "100%",
               }}
             >
               <h3
                 className="text-lg font-bold text-center mb-2"
-                style={{ fontFamily: "Cinzel, serif", color: "#FFD700" }}
+                style={{ fontFamily: "Cinzel, serif", color: "var(--sr-wood-deep)" }}
               >
                 Сдаться?
               </h3>
-              <p className="text-sm text-center mb-4" style={{ color: "rgba(200,160,80,0.7)" }}>
+              <p className="text-sm text-center mb-5" style={{ color: "var(--sr-text-muted)" }}>
                 Соперник получит победу
               </p>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2.5">
                 <button
                   onClick={handleResign}
-                  className="py-2.5 cursor-pointer"
+                  className="py-3 cursor-pointer active:scale-[0.98] transition-transform"
                   style={{
                     borderRadius: "12px",
-                    background: "rgba(180,30,0,0.3)",
-                    border: "1px solid rgba(200,50,30,0.4)",
-                    color: "#ff6b6b",
-                    fontFamily: "Cinzel, serif",
+                    background: "linear-gradient(135deg, #A74740 0%, #B45049 100%)",
+                    border: "1px solid rgba(132, 53, 46, 0.6)",
+                    color: "#FBF6EC",
+                    fontFamily: "Inter, sans-serif",
+                    fontWeight: 600,
                   }}
                 >
                   Сдаться
@@ -976,7 +1014,7 @@ export default function OnlineGame() {
                 <button
                   onClick={() => setShowResignConfirm(false)}
                   className="py-2.5 cursor-pointer"
-                  style={{ color: "rgba(212,175,55,0.6)" }}
+                  style={{ color: "var(--sr-text-muted)", fontWeight: 500 }}
                 >
                   Продолжить игру
                 </button>
@@ -993,36 +1031,41 @@ export default function OnlineGame() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/75"
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ background: "rgba(43, 27, 10, 0.4)", backdropFilter: "blur(6px)" }}
           >
             <div
               className="mx-6 p-6 rounded-2xl text-center"
               style={{
-                background: "#1a0800",
-                border: "1px solid rgba(212,175,55,0.25)",
-                maxWidth: 300,
+                background: "var(--sr-surface)",
+                border: "1px solid var(--sr-border-strong)",
+                boxShadow: "var(--sr-shadow-lg)",
+                maxWidth: 320,
                 width: "100%",
               }}
             >
-              <WifiOff className="w-10 h-10 text-yellow-400 mx-auto mb-3" />
+              <WifiOff className="w-10 h-10 mx-auto mb-3" style={{ color: "var(--sr-warning)" }} />
               <h3
                 className="text-lg font-bold mb-2"
-                style={{ fontFamily: "Cinzel, serif", color: "#FFD700" }}
+                style={{ fontFamily: "Cinzel, serif", color: "var(--sr-wood-deep)" }}
               >
                 Соперник вышел
               </h3>
-              <p className="text-sm mb-5" style={{ color: "rgba(200,160,80,0.7)" }}>
+              <p className="text-sm mb-5" style={{ color: "var(--sr-text-muted)" }}>
                 Соперник не отвечает. Вы можете забрать победу.
               </p>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2.5">
                 <button
                   onClick={handleOpponentLeftWin}
-                  className="py-2.5 cursor-pointer"
+                  className="py-3 cursor-pointer active:scale-[0.98] transition-transform"
                   style={{
                     borderRadius: "12px",
-                    background: "linear-gradient(135deg, #b8860b, #ffd700)",
-                    color: "#1a0800",
-                    fontFamily: "Cinzel, serif",
+                    background: "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)",
+                    color: "#2B1B0A",
+                    fontFamily: "Inter, sans-serif",
+                    fontWeight: 700,
+                    border: "1px solid rgba(167,126,46,0.55)",
+                    boxShadow: "0 4px 14px rgba(167,126,46,0.22)",
                   }}
                 >
                   Забрать победу
@@ -1030,14 +1073,14 @@ export default function OnlineGame() {
                 <button
                   onClick={() => setOpponentLeft(false)}
                   className="py-2.5 cursor-pointer"
-                  style={{ color: "rgba(212,175,55,0.6)" }}
+                  style={{ color: "var(--sr-text-muted)", fontWeight: 500 }}
                 >
                   Ждать дальше
                 </button>
                 <button
                   onClick={() => { clearActiveGame(); navigate("/"); }}
                   className="py-2.5 cursor-pointer"
-                  style={{ color: "rgba(212,175,55,0.4)" }}
+                  style={{ color: "var(--sr-text-subtle)", fontWeight: 500 }}
                 >
                   На главный экран
                 </button>

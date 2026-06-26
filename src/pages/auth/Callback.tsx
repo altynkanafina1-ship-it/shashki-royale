@@ -97,9 +97,9 @@ export default function AuthCallback() {
             onClick={() => navigate("/", { replace: true })}
             className="px-4 py-2 rounded-lg"
             style={{
-              background: "rgba(212,175,55,0.15)",
+              background: "var(--sr-border)",
               border: "1px solid rgba(212,175,55,0.3)",
-              color: "#D4AF37",
+              color: "var(--sr-wood-deep)",
             }}
           >
             На главную
@@ -108,8 +108,8 @@ export default function AuthCallback() {
             onClick={() => navigate("/auth/login", { replace: true })}
             className="px-4 py-2 rounded-lg font-bold"
             style={{
-              background: "linear-gradient(135deg, #D4AF37 0%, #FFD700 100%)",
-              color: "#0d0400",
+              background: "linear-gradient(135deg, #C39A48 0%, #E0BD6A 50%, #A77E2E 100%)",
+              color: "#2B1B0A",
             }}
           >
             Войти снова
@@ -126,7 +126,7 @@ export default function AuthCallback() {
     >
       <div
         className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
-        style={{ borderColor: "#D4AF37", borderTopColor: "transparent" }}
+        style={{ borderColor: "var(--sr-wood-deep)", borderTopColor: "transparent" }}
       />
       <p className="text-sm" style={{ color: "rgba(212,175,55,0.7)" }}>
         Авторизация...

@@ -13,8 +13,7 @@ const AVATARS = ["♟", "♛", "⚔️", "🛡️", "🦁", "🐺", "🔥", "�
 type SortKey = "rating" | "wins" | "total_games";
 
 const ROYAL_BG = {
-  background:
-    "radial-gradient(ellipse at 50% 0%, rgba(120,50,0,0.35) 0%, transparent 60%), linear-gradient(180deg, #0d0400 0%, #1a0800 50%, #0d0400 100%)",
+  background: "transparent",
 };
 
 export default function LeaderboardPage() {
@@ -50,13 +49,13 @@ export default function LeaderboardPage() {
         <button
           onClick={() => navigate("/")}
           className="p-2 rounded-xl cursor-pointer"
-          style={{ background: "rgba(255,255,255,0.05)" }}
+          style={{ background: "var(--sr-surface)" }}
         >
-          <ChevronLeft className="w-5 h-5" style={{ color: "rgba(200,150,50,0.8)" }} />
+          <ChevronLeft className="w-5 h-5" style={{ color: "var(--sr-text)" }} />
         </button>
         <h1
           className="text-base font-bold tracking-widest uppercase"
-          style={{ fontFamily: "Cinzel, serif", color: "#ffd700" }}
+          style={{ fontFamily: "Cinzel, serif", color: "var(--sr-wood-deep)" }}
         >
           {t("topPlayers")}
         </h1>
@@ -64,7 +63,7 @@ export default function LeaderboardPage() {
         <button
           onClick={() => navigate("/profile")}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer text-xs font-semibold"
-          style={{ background: "rgba(255,215,0,0.08)", border: "1px solid rgba(255,215,0,0.2)", color: "rgba(200,150,50,0.8)", fontFamily: "Cinzel, serif" }}
+          style={{ background: "var(--sr-surface)", border: "1px solid var(--sr-border)", color: "var(--sr-text)", fontFamily: "Inter, sans-serif" }}
         >
           <User className="w-3.5 h-3.5" />
           {t("profile")}
@@ -79,10 +78,10 @@ export default function LeaderboardPage() {
             onClick={() => setSortKey(opt.key)}
             className="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition-all"
             style={{
-              background: sortKey === opt.key ? "rgba(255,215,0,0.15)" : "rgba(255,255,255,0.04)",
-              border: sortKey === opt.key ? "1px solid rgba(255,215,0,0.4)" : "1px solid rgba(255,255,255,0.08)",
-              color: sortKey === opt.key ? "#ffd700" : "rgba(200,150,50,0.5)",
-              fontFamily: "Cinzel, serif",
+              background: sortKey === opt.key ? "var(--sr-border)" : "var(--sr-surface-2)",
+              border: sortKey === opt.key ? "1px solid var(--sr-border-strong)" : "1px solid var(--sr-border)",
+              color: sortKey === opt.key ? "var(--sr-wood-deep)" : "var(--sr-text-muted)",
+              fontFamily: "Inter, sans-serif",
             }}
           >
             {opt.label}
@@ -94,7 +93,7 @@ export default function LeaderboardPage() {
         {!supabaseConfigured ? (
           <div className="text-center py-16">
             <p className="text-4xl mb-4">⚙️</p>
-            <p className="text-sm" style={{ color: "rgba(200,150,50,0.5)" }}>
+            <p className="text-sm" style={{ color: "var(--sr-text-muted)" }}>
               Supabase не настроен
             </p>
           </div>
@@ -103,7 +102,7 @@ export default function LeaderboardPage() {
         ) : sorted.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-4xl mb-4">🏆</p>
-            <p className="text-sm" style={{ color: "rgba(200,150,50,0.5)" }}>
+            <p className="text-sm" style={{ color: "var(--sr-text-muted)" }}>
               Пока нет игроков
             </p>
           </div>
@@ -131,12 +130,12 @@ export default function LeaderboardPage() {
                     className="flex items-center gap-3 px-4 py-3 rounded-xl"
                     style={{
                       background: isMe ? "rgba(255,215,0,0.07)" : "rgba(255,255,255,0.02)",
-                      border: isMe ? "1px solid rgba(255,215,0,0.25)" : "1px solid rgba(255,255,255,0.04)",
+                      border: isMe ? "1px solid var(--sr-border-strong)" : "1px solid var(--sr-surface-2)",
                     }}
                   >
                     {/* Rank */}
                     <div className="w-7 text-center shrink-0">
-                      <span className="text-sm" style={{ color: "rgba(200,150,50,0.4)" }}>
+                      <span className="text-sm" style={{ color: "var(--sr-text-muted)" }}>
                         {rank}
                       </span>
                     </div>
@@ -161,16 +160,16 @@ export default function LeaderboardPage() {
                     <div className="flex-1 min-w-0">
                       <p
                         className="text-sm font-semibold truncate"
-                        style={{ color: isMe ? "#ffd700" : "rgba(220,180,80,0.9)", fontFamily: "Cinzel, serif" }}
+                        style={{ color: isMe ? "var(--sr-wood-deep)" : "var(--sr-text)", fontFamily: "Inter, sans-serif" }}
                       >
                         {player.nickname}
                         {isMe && (
-                          <span className="ml-1 text-xs" style={{ color: "rgba(200,150,50,0.5)" }}>
+                          <span className="ml-1 text-xs" style={{ color: "var(--sr-text-muted)" }}>
                             ({t("you")})
                           </span>
                         )}
                       </p>
-                      <p className="text-xs" style={{ color: "rgba(200,150,50,0.35)" }}>
+                      <p className="text-xs" style={{ color: "var(--sr-text-muted)" }}>
                         {player.total_games} игр • {winRate}% побед
                       </p>
                     </div>
@@ -178,7 +177,7 @@ export default function LeaderboardPage() {
                     {/* Rating + tier */}
                     <div className="text-right shrink-0">
                       <p className="text-sm font-bold" style={{ color: tierInfo.color }}>{player.rating}</p>
-                      <p className="text-xs" style={{ color: "rgba(200,150,50,0.35)" }}>{tierInfo.label}</p>
+                      <p className="text-xs" style={{ color: "var(--sr-text-muted)" }}>{tierInfo.label}</p>
                     </div>
                   </motion.div>
                 );
@@ -230,7 +229,7 @@ function Podium({
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl"
                   style={{
-                    background: `radial-gradient(circle, ${tierInfo.glow} 0%, rgba(255,255,255,0.03) 80%)`,
+                    background: `radial-gradient(circle, ${tierInfo.glow} 0%, var(--sr-surface-2) 80%)`,
                     border: isMe ? `2px solid ${tierInfo.color}` : `1px solid ${tierInfo.color}55`,
                     boxShadow: rank === 1 ? `0 0 16px ${tierInfo.glow}` : "none",
                   }}
@@ -239,7 +238,7 @@ function Podium({
                 </div>
                 <p
                   className="text-xs font-bold text-center truncate w-full px-1"
-                  style={{ color: rank === 1 ? "#ffd700" : "rgba(220,180,80,0.8)", fontFamily: "Cinzel, serif" }}
+                  style={{ color: rank === 1 ? "var(--sr-wood-deep)" : "var(--sr-text)", fontFamily: "Inter, sans-serif" }}
                 >
                   {player.nickname}
                   {isMe && " ✦"}
@@ -252,13 +251,13 @@ function Podium({
                 className={`w-full ${heights[i]} rounded-t-xl flex flex-col items-center justify-start pt-2 gap-1`}
                 style={{
                   background: rank === 1
-                    ? "linear-gradient(180deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.08) 100%)"
+                    ? "linear-gradient(180deg, var(--sr-border) 0%, var(--sr-surface) 100%)"
                     : rank === 2
                     ? "linear-gradient(180deg, rgba(192,192,192,0.15) 0%, rgba(192,192,192,0.06) 100%)"
                     : "linear-gradient(180deg, rgba(205,127,50,0.15) 0%, rgba(205,127,50,0.06) 100%)",
                   border: rank === 1
-                    ? "1px solid rgba(255,215,0,0.25)"
-                    : "1px solid rgba(255,255,255,0.08)",
+                    ? "1px solid var(--sr-border-strong)"
+                    : "1px solid var(--sr-border)",
                   borderBottom: "none",
                 }}
               >
@@ -266,8 +265,8 @@ function Podium({
                 <span
                   className="text-xs font-bold"
                   style={{
-                    color: rank === 1 ? "#ffd700" : rank === 2 ? "#c0c0c0" : "#cd7f32",
-                    fontFamily: "Cinzel, serif",
+                    color: rank === 1 ? "var(--sr-wood-deep)" : rank === 2 ? "#c0c0c0" : "#cd7f32",
+                    fontFamily: "Inter, sans-serif",
                   }}
                 >
                   #{rank}
@@ -285,7 +284,7 @@ function LoadingSkeleton() {
   return (
     <div className="space-y-1 p-4">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="h-14 rounded-xl animate-pulse" style={{ background: "rgba(255,255,255,0.04)" }} />
+        <div key={i} className="h-14 rounded-xl animate-pulse" style={{ background: "var(--sr-surface-2)" }} />
       ))}
     </div>
   );
